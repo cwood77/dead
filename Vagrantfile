@@ -10,8 +10,9 @@ Vagrant.configure("2") do |config|
         v.memory = 1024
         v.cpus = 1
     end
-    config.vm.synced_folder ".", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+    config.vm.synced_folder "./www", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
     config.vm.synced_folder "./mysql", "/var/lib/mysql", :mount_options => ["dmode=777", "fmode=666"]
+    config.vm.synced_folder "./home", "/home/vagrant", :mount_options => ["dmode=777", "fmode=666"]
     config.vm.provision "shell", path: "bootstrap.sh"
     config.vm.provision "shell", :run => 'always', inline: <<-SHELL
         
