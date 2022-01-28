@@ -3,16 +3,30 @@
 require '/var/www/db-secrets.php';
 
 class User {
+   private $db;
    private $id;
 
    function __construct($db, $id)
    {
+      $this->db = $db;
+      $this->id = $id;
    }
 
+   function login($password)
+   {
+      $query = $this->db->conn->prepare("SELECT password FROM Users WHERE id='" . $this->id . "'");
+      $query->execute();
+      $expected = $query->fetchColumn();
+      if (password_verify($password,$expected))
+      {
+         return true;
+      }
+      return false;
+   }
 }
 
 class Db {
-   private $conn;
+   public $conn;
 
    function __construct()
    {
@@ -46,15 +60,8 @@ class Db {
 
    function addUser($username, $password)
    {
-      try
-      {
-         $sql = "INSERT INTO Users (displayName, password, userName) VALUES ('" . $username . "', '" . $password . "', '" . $username . "')";
-         $this->conn->exec($sql);
-      }
-      catch(PDOException $x)
-      {
-         return $x->getMessage();
-      }
+      $sql = "INSERT INTO Users (password, userName) VALUES ('" . $password . "', '" . $username . "')";
+      $this->conn->exec($sql);
    }
 }
 
