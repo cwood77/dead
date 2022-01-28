@@ -1,0 +1,9 @@
+CREATE DATABASE Dead;
+
+CREATE TABLE Dead.Users (
+   id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+   userName VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+   password VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+   displayName VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+   PRIMARY KEY (id)
+);
