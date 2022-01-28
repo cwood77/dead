@@ -1,39 +1,51 @@
-<?php
-
-require 'util.php';
-//require '../secrets.php';
-
-$username = "";
-$error = "";
-
-//$conn = new PDO("mysql:host=localhost;dbname=Dead", DBUSER, DBPASSWD);
-
-if ($_SERVER["REQUEST_METHOD"] == "POST")
-{
-   if (empty($_POST["username"]))
-   {
-      $error .= '<p class="error">username cannot be blank</p>';
-   }
-   else
-   {
-      $username = $_POST["username"];
-   }
-   if (empty($_POST["password"]))
-   {
-      $error .= '<p class="error">password cannot be blank</p>';
-   }
-
-   if (empty($error))
-   {
-      redirect("dashboard.php");
-   }
-}
-
-?>
 <html>
 <head>
 <link rel="stylesheet" href="index.css"/>
 <title>Dead</title>
+
+<script>
+
+function checkIfEmpty(name)
+{
+   var e = document.getElementById(name);
+   if (e.value.length == 0)
+   {
+      return name + " cannot be empty<br/>";
+   }
+   return "";
+}
+
+function submit()
+{
+   var error = checkIfEmpty("username");
+   error += checkIfEmpty("password");
+   document.getElementById("message").innerHTML = error;
+
+   if (error.length == 0)
+   {
+      // attempt to sign up
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+         if (this.readyState == 4 /*&& this.status == 200*/) {
+            document.getElementById("message").innerHTML = this.responseText;
+            if (this.responseText == "login successfull")
+            {
+               window.location.href="dashboard.php";
+            }
+         }
+      };
+      xmlhttp.open(
+         "POST",
+         "_signup.php?"
+            + "username=" + document.getElementById("username").value
+            + "&password=" + document.getElementById("password").value,
+         true);
+      xmlhttp.send();
+   }
+}
+
+</script>
+
 </head>
 
 <body>
@@ -43,12 +55,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 <p class="tagline">Do not go gentle into that good night</p>
 
 <h1>Create an Account</h1>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-username: <input type="text", name="username", value="<?php echo $username; ?>"><br/>
-password: <input type="password", name="password"><br/>
-<br/><input type="submit">
-<?php echo $error; ?>
+<form>
+username: <input type="text", id="username", name="username"><br/>
+password: <input type="password", id="password", name="password"><br/>
+<p class="error" id="message"/>
 </form>
+<button onclick="submit()"/>Submit</button>
 
 </center>
 </body>
