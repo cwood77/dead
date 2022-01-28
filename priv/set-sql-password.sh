@@ -11,3 +11,11 @@ EOF
 
 echo running sql commands
 sudo mysql -u root -p $OLD_PASSWD </home/vagrant/_set-password.sql
+
+echo generating PHP script
+sudo cat <<EOF >>/var/www/db-secrets.php
+<?php
+define("DBUSER", "root");
+define("DBPASSWD", "$2");
+?>
+EOF
