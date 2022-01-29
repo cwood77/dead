@@ -2,6 +2,24 @@
 
 require '/var/www/db-secrets.php';
 
+class Goal {
+   function getTitle()
+   {
+   }
+
+   function setTitle()
+   {
+   }
+
+   function getPriority()
+   {
+   }
+
+   function setPriority()
+   {
+   }
+}
+
 class User {
    private $db;
    private $id;
@@ -22,6 +40,14 @@ class User {
          return true;
       }
       return false;
+   }
+
+   function addGoal($title)
+   {
+   }
+
+   function listGoals()
+   {
    }
 }
 
