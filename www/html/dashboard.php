@@ -21,7 +21,7 @@ if (empty($_SESSION['username']))
 <br/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<button onclick="document.location='add.php'">Add</button><br/>
+<button onclick="document.location='add.php?AsUser=<?php echo $_SESSION['username']; ?>'">Add</button><br/>
 <br/>
 
 <table>
