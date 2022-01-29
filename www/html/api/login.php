@@ -1,11 +1,12 @@
 <?php
 
-require 'util.php';
-require 'db.php';
+require '/var/www/html/util.php';
+require '/var/www/html/db.php';
 
-demandHttpPost();
-$username = nonEmptyArg("username");
-$password = nonEmptyArg("password");
+$checker = new ApiChecker();
+$username = $checker->demandArg("username");
+$password = $checker->demandArg("password");
+$checker->check();
 
 $db = new Db();
 
@@ -16,7 +17,7 @@ if ($user != null)
    {
       if ($user->login($password))
       {
-         echo "login successfull";
+         echo '{ "pass": true }';
       }
       else
       {

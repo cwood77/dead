@@ -6,7 +6,7 @@ echo "hello";
 
 <html>
 <head>
-<link rel="stylesheet" href="index.css"/>
+<link rel="stylesheet" href="main.css"/>
 <title>Dead</title>
 </head>
 <body>

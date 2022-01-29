@@ -1,8 +1,9 @@
 <html>
 <head>
-<link rel="stylesheet" href="index.css"/>
+<link rel="stylesheet" href="main.css"/>
 <title>Dead</title>
 
+<?php require 'api.php'; includeJsApis(array("addUser","login")); ?>
 <script>
 
 function checkIfEmpty(name)
@@ -17,37 +18,38 @@ function checkIfEmpty(name)
 
 function submit()
 {
+   // client-side validation
    var error = checkIfEmpty("username");
    error += checkIfEmpty("password");
    document.getElementById("message").innerHTML = error;
-
-   if (error.length == 0)
+   if (error.length != 0)
    {
-      // phone home
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function() {
-         if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("message").innerHTML = this.responseText;
-            if (this.responseText == "login successfull")
-            {
-               window.location.href="dashboard.php";
-            }
-         }
-      };
+      return;
+   }
 
-      var baseUrl = "_login.php";
-      if (document.getElementById("newacct").checked)
-      {
-         baseUrl = "_signup.php";
-      }
+   // latch vars
+   var u = document.getElementById("username").value;
+   var p = document.getElementById("password").value;
+   var add = document.getElementById("newacct").checked;
 
-      xmlhttp.open(
-         "POST",
-         baseUrl
-            + "?username=" + document.getElementById("username").value
-            + "&password=" + document.getElementById("password").value,
-         true);
-      xmlhttp.send();
+   var showMessage = (m) =>
+   {
+      document.getElementById("message").innerHTML = m;
+   }
+   var good = () =>
+   {
+      showMessage("login successful");
+      window.location.href="dashboard.php";
+   }
+
+   // sign-up or log-in
+   if (add)
+   {
+      api.addUser(u,p,good,showMessage);
+   }
+   else
+   {
+      api.login(u,p,good,showMessage);
    }
 }
 

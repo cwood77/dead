@@ -67,3 +67,5 @@ class ServerMessage {
       }
    }
 }
+
+const api = {}
