@@ -112,6 +112,14 @@ class Db {
       $sql = "INSERT INTO Users (password, userName) VALUES ('" . $password . "', '" . $username . "')";
       $this->conn->exec($sql);
    }
+
+   function listUsers()
+   {
+      $query = $this->conn->prepare(
+         "SELECT userName FROM Dead.Users ORDER BY userName ASC");
+      $query->execute();
+      return $query->fetchAll();
+   }
 }
 
 ?>

@@ -16,7 +16,6 @@ leaveIfNoSession();
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php echo "Welcome " . $_SESSION['username']; ?><br/>
 <br/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <button onclick="document.location='add.php?AsUser=<?php echo $_SESSION['username']; ?>'">Add</button><br/>
 <br/>
@@ -42,6 +41,8 @@ catch(PDOException $x)
 
 ?>
 </table>
+<br/>
+<button onclick="document.location='account.php'">Account</button>
 
 </body>
 </html>
