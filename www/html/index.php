@@ -23,10 +23,10 @@ function submit()
 
    if (error.length == 0)
    {
-      // attempt to sign up
+      // phone home
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function() {
-         if (this.readyState == 4 /*&& this.status == 200*/) {
+         if (this.readyState == 4 && this.status == 200) {
             document.getElementById("message").innerHTML = this.responseText;
             if (this.responseText == "login successfull")
             {
@@ -34,10 +34,17 @@ function submit()
             }
          }
       };
+
+      var baseUrl = "_login.php";
+      if (document.getElementById("newacct").checked)
+      {
+         baseUrl = "_signup.php";
+      }
+
       xmlhttp.open(
          "POST",
-         "_signup.php?"
-            + "username=" + document.getElementById("username").value
+         baseUrl
+            + "?username=" + document.getElementById("username").value
             + "&password=" + document.getElementById("password").value,
          true);
       xmlhttp.send();
@@ -54,13 +61,13 @@ function submit()
 <img src="logo.png"><br/>
 <p class="tagline">Do not go gentle into that good night</p>
 
-<h1>Create an Account</h1>
 <form>
-username: <input type="text", id="username", name="username"><br/>
-password: <input type="password", id="password", name="password"><br/>
+Create a new account: <input type="checkbox" id="newacct"/><br/>
+username: <input type="text" id="username", name="username"><br/>
+password: <input type="password" id="password", name="password"><br/>
 <p class="error" id="message"/>
 </form>
-<button onclick="submit()"/>Submit</button>
+<button onclick="submit()">Submit</button>
 
 </center>
 </body>

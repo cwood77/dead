@@ -10,12 +10,18 @@ $password = nonEmptyArg("password");
 $db = new Db();
 
 $user = $db->findUser($username);
-if ($user == null)
+if ($user != null)
 {
    try
    {
-      $db->addUser($username,password_hash($password, PASSWORD_DEFAULT));
-      echo "login successfull";
+      if ($user->login($password))
+      {
+         echo "login successfull";
+      }
+      else
+      {
+         echo "bad password";
+      }
    }
    catch(PDOException $x)
    {
@@ -24,7 +30,7 @@ if ($user == null)
 }
 else
 {
-   echo $username . " already exists";
+   echo $username . " does not exist";
 }
 
 ?>
