@@ -1,3 +1,15 @@
+<?php
+
+require 'util.php';
+
+session_start();
+if (!empty($_SESSION['username']))
+{
+   redirect('dashboard.php');
+}
+
+?>
+
 <html>
 <head>
 <link rel="stylesheet" href="main.css"/>
@@ -36,7 +48,7 @@ function submit()
    {
       document.getElementById("message").innerHTML = m;
    }
-   var good = () =>
+   var good = (json) =>
    {
       showMessage("login successful");
       window.location.href="dashboard.php";

@@ -16,7 +16,9 @@ if ($user == null)
    try
    {
       $db->addUser($username,password_hash($password, PASSWORD_DEFAULT));
-      echo '{ "pass": true }';
+      session_start();
+      $_SESSION['username'] = $username;
+      echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
    }
    catch(PDOException $x)
    {
