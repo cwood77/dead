@@ -1,6 +1,12 @@
 <?php
 
-echo "hello";
+require 'util.php';
+
+session_start();
+if (empty($_SESSION['username']))
+{
+   redirect('index.php');
+}
 
 ?>
 
@@ -10,6 +16,8 @@ echo "hello";
 <title>Dead</title>
 </head>
 <body>
+<?php echo "Welcome " . $_SESSION['username']; ?><br/>
+<br/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <table>

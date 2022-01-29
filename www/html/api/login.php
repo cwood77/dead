@@ -17,7 +17,9 @@ if ($user != null)
    {
       if ($user->login($password))
       {
-         echo '{ "pass": true }';
+         session_start();
+         $_SESSION['username'] = $username;
+         echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
       }
       else
       {
