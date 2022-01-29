@@ -2,12 +2,7 @@
 
 require 'util.php';
 
-session_start();
-if (empty($_SESSION['username']))
-{
-   redirect('index.php');
-}
-
+leaveIfNoSession();
 $checker = new FrontEndChecker();
 $owningUser = $checker->demandArg("AsUser");
 $checker->check();
@@ -46,6 +41,7 @@ function submit()
 </script>
 </head>
 <body>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <form>
 name: <input type="text" id="name"><br/>

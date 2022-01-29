@@ -3,11 +3,7 @@
 require 'util.php';
 require 'db.php';
 
-session_start();
-if (empty($_SESSION['username']))
-{
-   redirect('index.php');
-}
+leaveIfNoSession();
 
 ?>
 
@@ -17,6 +13,7 @@ if (empty($_SESSION['username']))
 <title>Dead</title>
 </head>
 <body>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php echo "Welcome " . $_SESSION['username']; ?><br/>
 <br/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

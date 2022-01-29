@@ -8,6 +8,15 @@ function redirect($url)
     die();
 }
 
+function leaveIfNoSession()
+{
+   session_start();
+   if (empty($_SESSION['username']))
+   {
+      redirect('index.php');
+   }
+}
+
 class CheckerBase {
    protected $errorMessage;
 
