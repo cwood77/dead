@@ -69,3 +69,13 @@ class ServerMessage {
 }
 
 const api = {}
+
+function checkIfEmpty(name)
+{
+   var e = document.getElementById(name);
+   if (e.value.length == 0)
+   {
+      return name + " cannot be empty<br/>";
+   }
+   return "";
+}
