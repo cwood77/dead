@@ -2,11 +2,10 @@
 
 require 'util.php';
 
-session_start();
-if (empty($_SESSION['username']))
-{
-   redirect('index.php');
-}
+leaveIfNoSession();
+$checker = new FrontEndChecker();
+$owningUser = $checker->demandArg("AsUser");
+$checker->check();
 
 ?>
 
@@ -16,6 +15,7 @@ if (empty($_SESSION['username']))
 <title>Dead</title>
 <?php require 'api.php'; includeJsApi("addGoal"); ?>
 <script>
+<?php echo 'var _owningUser = "' . $owningUser . '";'; ?>
 
 function submit()
 {
@@ -35,12 +35,13 @@ function submit()
    {
       window.location.href="dashboard.php";
    }
-   api.addGoal(name,priority,good);
+   api.addGoal(_owningUser,name,priority,good);
 }
 
 </script>
 </head>
 <body>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <form>
 name: <input type="text" id="name"><br/>

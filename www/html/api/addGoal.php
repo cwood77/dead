@@ -10,13 +10,14 @@ if (empty($_SESSION['username']))
 }
 
 $checker = new ApiChecker();
+$owningUser = $checker->demandArg("As");
 $name = $checker->demandArg("Name");
 $priority = $checker->demandArg("Priority");
 $checker->check();
 
 $db = new Db();
 
-$user = $db->findUser($_SESSION['username']);
+$user = $db->findUser($owningUser);
 if ($user != null)
 {
    try
@@ -32,7 +33,7 @@ if ($user != null)
 }
 else
 {
-   echo $_SESSION['username'] . " doesn't exist?";
+   echo $owningUser . " doesn't exist?";
 }
 
 ?>

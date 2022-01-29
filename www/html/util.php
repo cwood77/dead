@@ -8,40 +8,28 @@ function redirect($url)
     die();
 }
 
-function demandHttpPost()
+function leaveIfNoSession()
 {
-   if ($_SERVER["REQUEST_METHOD"] != "POST")
+   session_start();
+   if (empty($_SESSION['username']))
    {
-      echo "internal messaging error";
-      die();
+      redirect('index.php');
    }
 }
 
-function nonEmptyArg($name)
-{
-   $v = $_REQUEST[$name];
-   if (empty($v))
-   {
-      echo "internal messaging error; arg '$name' absent";
-      die();
-   }
-   return $v;
-}
-
-class ApiChecker {
-   private $errorMessage;
+class CheckerBase {
+   protected $errorMessage;
 
    function __construct()
    {
       $this->errorMessage = "";
-      $this->demandPost();
    }
 
-   function demandPost()
+   protected function demandMethod($method)
    {
-      if ($_SERVER["REQUEST_METHOD"] != "POST")
+      if ($_SERVER["REQUEST_METHOD"] != $method)
       {
-         $this->addError("HTTP request method must be POST");
+         $this->addError("HTTP request method must be " . $method);
       }
    }
 
@@ -55,7 +43,7 @@ class ApiChecker {
       return $v;
    }
 
-   function addError($text)
+   protected function addError($text)
    {
       if (!empty($this->errorMessage))
       {
@@ -71,6 +59,22 @@ class ApiChecker {
          echo $this->errorMessage;
          die();
       }
+   }
+}
+
+class ApiChecker extends CheckerBase {
+   function __construct()
+   {
+      $this->errorMessage = "";
+      $this->demandMethod("POST");
+   }
+}
+
+class FrontEndChecker extends CheckerBase {
+   function __construct()
+   {
+      $this->errorMessage = "";
+      $this->demandMethod("GET");
    }
 }
 
