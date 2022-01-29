@@ -1,6 +1,7 @@
 <?php
 
 require 'util.php';
+require 'db.php';
 
 session_start();
 if (empty($_SESSION['username']))
@@ -20,17 +21,29 @@ if (empty($_SESSION['username']))
 <br/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<button onclick="document.location='add.php'">Add</button><br/>
+<br/>
+
 <table>
 <tr><th>Priority</th><th>Item</th></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
-<tr><td>Priority</td><td>Item</td></tr>
+<?php
+
+try
+{
+   $db = new Db();
+   $user = $db->findUser($_SESSION['username']);
+   $goals = $user->listGoals();
+   foreach($goals as $goal)
+   {
+      echo "<tr><td>" . $goal['priority'] . "</td><td>" . $goal['title'] . "</td></tr>";
+   }
+}
+catch(PDOException $x)
+{
+   echo "DB error: " . $x->getMessage();
+}
+
+?>
 </table>
 
 </body>

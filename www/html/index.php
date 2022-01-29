@@ -18,16 +18,6 @@ if (!empty($_SESSION['username']))
 <?php require 'api.php'; includeJsApis(array("addUser","login")); ?>
 <script>
 
-function checkIfEmpty(name)
-{
-   var e = document.getElementById(name);
-   if (e.value.length == 0)
-   {
-      return name + " cannot be empty<br/>";
-   }
-   return "";
-}
-
 function submit()
 {
    // client-side validation

@@ -6,3 +6,31 @@ CREATE TABLE Dead.Users (
    password VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
    PRIMARY KEY (id)
 );
+
+CREATE TABLE Dead.Goals (
+   id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+   userID INT(11) UNSIGNED NOT NULL,
+   title VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+   priority INT(8) UNSIGNED NOT NULL DEFAULT 4,
+   brokenDown BOOLEAN DEFAULT FALSE,
+   PRIMARY KEY (id),
+   FOREIGN KEY (userID) REFERENCES Dead.Users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Dead.GoalsVisibleToUser (
+   userID INT(11) UNSIGNED NOT NULL,
+   goalID INT(11) UNSIGNED NOT NULL,
+   FOREIGN KEY (userID) REFERENCES Dead.Users(id) ON DELETE CASCADE,
+   FOREIGN KEY (goalID) REFERENCES Dead.Goals(id) ON DELETE CASCADE,
+   PRIMARY KEY(userID, goalID)
+);
+
+CREATE TABLE Dead.Steps (
+   id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+   goalID INT(11) UNSIGNED NOT NULL,   
+   title VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+   priority INT(8) UNSIGNED NOT NULL DEFAULT 4,
+   state ENUM('blocked', 'ready', 'inwork', 'complete'),
+   PRIMARY KEY(id),
+   FOREIGN KEY(goalID) REFERENCES Dead.Goals(id) ON DELETE CASCADE
+);
