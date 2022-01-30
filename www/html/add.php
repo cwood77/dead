@@ -44,7 +44,7 @@ function submit()
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <form>
-name: <input type="text" id="name"><br/>
+name: <input type="text" id="name" class="wide"><br/>
 priority: <select id="priority">
    <option>1</option>
    <option>2</option>

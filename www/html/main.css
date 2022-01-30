@@ -21,7 +21,7 @@ td, th {
   padding: 8px;
 }
 
-th:first-child { width: 1px; }
+th:not(:last-child) { width: 1px; }
 
 tr:nth-child(even){background-color: #f2f2f2;}
 
@@ -33,4 +33,8 @@ th {
   text-align: left;
   background-color: #04AA6D;
   color: white;
+}
+
+input.wide {
+  width: 60%;
 }

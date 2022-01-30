@@ -43,6 +43,16 @@ class CheckerBase {
       return $v;
    }
 
+   function demandArgBool($name)
+   {
+      $v = $this->demandArg($name);
+      if ($v == "false")
+      {
+         return false;
+      }
+      return true;
+   }
+
    protected function addError($text)
    {
       if (!empty($this->errorMessage))

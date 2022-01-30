@@ -5,9 +5,8 @@ require '/var/www/html/db.php';
 
 leaveIfNoSession();
 $checker = new ApiChecker();
+$goalId = $checker->demandArg("GoalID");
 $owningUser = $checker->demandArg("As");
-$name = $checker->demandArg("Name");
-$priority = $checker->demandArg("Priority");
 $checker->check();
 
 $db = new Db();
@@ -17,9 +16,8 @@ if ($user != null)
 {
    try
    {
-      $goal = $user->addGoal($name);
-      $goal->setPriority($priority);
-      $goal->addHistory($_SESSION['username'],"goal created");
+      $goal = $user->queryGoal($goalId);
+      $goal->delete();
       echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
    }
    catch(PDOException $x)
