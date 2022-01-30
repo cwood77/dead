@@ -4,6 +4,7 @@ CREATE TABLE Dead.Users (
    id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
    userName VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
    password VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+   superuser BOOLEAN DEFAULT FALSE,
    PRIMARY KEY (id)
 );
 
@@ -18,11 +19,11 @@ CREATE TABLE Dead.Goals (
 );
 
 CREATE TABLE Dead.GoalsVisibleToUser (
-   userID INT(11) UNSIGNED NOT NULL,
-   goalID INT(11) UNSIGNED NOT NULL,
-   FOREIGN KEY (userID) REFERENCES Dead.Users(id) ON DELETE CASCADE,
-   FOREIGN KEY (goalID) REFERENCES Dead.Goals(id) ON DELETE CASCADE,
-   PRIMARY KEY(userID, goalID)
+   looker INT(11) UNSIGNED NOT NULL,
+   lookee INT(11) UNSIGNED NOT NULL,
+   PRIMARY KEY(looker, lookee),
+   FOREIGN KEY (looker) REFERENCES Dead.Users(id) ON DELETE CASCADE,
+   FOREIGN KEY (lookee) REFERENCES Dead.Users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Dead.Steps (
@@ -33,4 +34,16 @@ CREATE TABLE Dead.Steps (
    state ENUM('blocked', 'ready', 'inwork', 'complete'),
    PRIMARY KEY(id),
    FOREIGN KEY(goalID) REFERENCES Dead.Goals(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Dead.GoalHistory (
+   id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+   goalID INT(11) UNSIGNED NOT NULL,
+   kind ENUM('comment', 'auto'),
+   userID INT(11) UNSIGNED,
+   text VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+   ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (id),
+   FOREIGN KEY (goalID) REFERENCES Dead.Goals(id) ON DELETE CASCADE,
+   FOREIGN KEY (userID) REFERENCES Dead.Users(id)
 );

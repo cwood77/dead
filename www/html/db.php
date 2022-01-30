@@ -5,15 +5,20 @@ require '/var/www/db-secrets.php';
 class Goal {
    private $db;
    private $id;
+   private $title;
+   private $pri;
 
-   function __construct($db, $id)
+   function __construct($db, $id, $title, $pri)
    {
       $this->db = $db;
       $this->id = $id;
+      $this->title = $title;
+      $this->pri = $pri;
    }
 
    function getTitle()
    {
+      return $this->title;
    }
 
    function setTitle()
@@ -22,12 +27,14 @@ class Goal {
 
    function getPriority()
    {
+      return $this->pri;
    }
 
    function setPriority($value)
    {
       $sql = "UPDATE Dead.Goals SET priority = '" . $value . "' WHERE id = '" . $this->id . "'";
       $this->db->conn->exec($sql);
+      $this->pri = $value;
    }
 }
 
@@ -62,15 +69,24 @@ class User {
       $query->execute();
       $gid = $query->fetchColumn();
 
-      return new Goal($this->db, $gid);
+      return new Goal($this->db, $gid, $title, 4);
    }
 
    function listGoals()
    {
       $query = $this->db->conn->prepare(
-         "SELECT priority, title FROM Dead.Goals WHERE userID = '" . $this->id . "' ORDER BY priority ASC, title ASC");
+         "SELECT id, priority, title FROM Dead.Goals WHERE userID = '" . $this->id . "' ORDER BY priority ASC, title ASC");
       $query->execute();
       return $query->fetchAll();
+   }
+
+   function queryGoal($gid)
+   {
+      $query = $this->db->conn->prepare(
+         "SELECT priority, title FROM Dead.Goals WHERE id = '" . $gid . "'");
+      $query->execute();
+      $fields = $query->fetchAll();
+      return new Goal($this->db, $gid, $fields[0]['title'], $fields[0]['priority']);
    }
 }
 
