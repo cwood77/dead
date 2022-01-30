@@ -47,3 +47,9 @@ CREATE TABLE Dead.GoalHistory (
    FOREIGN KEY (goalID) REFERENCES Dead.Goals(id) ON DELETE CASCADE,
    FOREIGN KEY (userID) REFERENCES Dead.Users(id)
 );
+
+INSERT INTO Dead.Users (userName, superuser, password) VALUES(
+   "McDaddy",
+   TRUE,
+   "$2y$10$r7fb3j4cOBtCmYKTU2Kwk.kc1Sl5KqK6XrBprKUN4bOZ2Br0YkqFS"
+);

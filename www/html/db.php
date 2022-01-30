@@ -36,11 +36,49 @@ class Goal {
       $this->db->conn->exec($sql);
       $this->pri = $value;
    }
+
+   function addHistory($username, $text, $kind = "auto")
+   {
+      $userId = $this->db->findUser($username)->id;
+      $sql = "INSERT INTO Dead.GoalHistory (goalID, kind, userID, text) VALUES ("
+         . "'" . $this->id . "', "
+         . "'" . $kind . "', "
+         . "'" . $userId . "', "
+         . "'" . $text . "'"
+         .  ")";
+      $this->db->conn->exec($sql);
+   }
+
+   function listHistory()
+   {
+      $query = $this->db->conn->prepare(
+         "SELECT ts, userID, text FROM Dead.GoalHistory WHERE goalID = '" . $this->id . "' ORDER BY ts DESC");
+      $query->execute();
+
+      $ans = array();
+
+      $pdoRows = $query->fetchAll();
+      foreach($pdoRows as $pdoRow)
+      {
+         $subquery = $this->db->conn->prepare(
+            "SELECT userName FROM Dead.Users WHERE id = '" . $pdoRow['userID'] . "'");
+         $subquery->execute();
+         $username = $subquery->fetchColumn();
+
+         array_push($ans,
+            array(
+               $pdoRow['ts'],
+               $username,
+               $pdoRow['text']));
+      }
+
+      return $ans;
+   }
 }
 
 class User {
    private $db;
-   private $id;
+   public $id;
 
    function __construct($db, $id)
    {
@@ -88,6 +126,63 @@ class User {
       $fields = $query->fetchAll();
       return new Goal($this->db, $gid, $fields[0]['title'], $fields[0]['priority']);
    }
+
+   function getSharingInfo()
+   {
+      $query = $this->db->conn->prepare(
+         "SELECT looker FROM Dead.GoalsVisibleToUser WHERE lookee = '" . $this->id . "'");
+      $query->execute();
+      $pdoData = $query->fetchAll();
+
+      $rval = array();
+      foreach($pdoData as $row)
+      {
+          $lookerId = $row['looker'];
+          $subquery = $this->db->conn->prepare(
+             "SELECT userName FROM Dead.Users WHERE id = '" . $lookerId . "'");
+          $subquery->execute();
+          $lookerName = $subquery->fetchColumn();
+
+          $rval[$lookerName] = true;
+      }
+
+      return $rval;
+   }
+
+   function setSharing($looker, $allowed)
+   {
+      $lookerId = $this->db->findUser($looker)->id;
+
+      $query = $this->db->conn->prepare(
+         "SELECT looker FROM Dead.GoalsVisibleToUser WHERE looker = '" . $lookerId . "' AND lookee = '" . $this->id . "'");
+      $query->execute();
+      if ($query->fetchColumn() == false)
+      {
+         // not currently enabled
+         if ($allowed)
+         {
+            $sql = "INSERT INTO Dead.GoalsVisibleToUser (looker, lookee) VALUES ('" . $lookerId . "', '" . $this->id . "')";
+            $this->db->conn->exec($sql);
+         }
+         else
+         {
+            // noop
+         }
+      }
+      else
+      {
+         // currently enabled
+         if ($allowed)
+         {
+            // noop
+         }
+         else
+         {
+            $sql = "DELETE FROM Dead.GoalsVisibleToUser WHERE looker = '" . $lookerId . "' AND lookee = '" . $this->id . "'";
+            $this->db->conn->exec($sql);
+         }
+      }
+   }
 }
 
 class Db {
@@ -132,7 +227,7 @@ class Db {
    function listUsers()
    {
       $query = $this->conn->prepare(
-         "SELECT userName FROM Dead.Users ORDER BY userName ASC");
+         "SELECT userName, superuser FROM Dead.Users ORDER BY userName ASC");
       $query->execute();
       return $query->fetchAll();
    }

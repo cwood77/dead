@@ -24,6 +24,7 @@ if ($user != null)
    {
       $goal = $user->addGoal($name);
       $goal->setPriority($priority);
+      $goal->addHistory($owningUser,"goal created");
       echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
    }
    catch(PDOException $x)

@@ -66,6 +66,16 @@ function onload()
    document.getElementById("priority").getElementsByTagName("option")[<?php echo $goal->getPriority(); ?>-1].selected = 'selected';
 }
 
+function addComment()
+{
+   var control = document.getElementById("newCommentText");
+
+   alert("unimpl'd");
+
+   control.value = "";
+   toggle(addingComment);
+}
+
 </script>
 </head>
 <body onload="onload()">
@@ -101,13 +111,19 @@ Text:<input type="text"><br/>
 <hr>
 <!-- add panel -->
 <button name="addingCommentStart" onclick="toggle(addingComment)">Add Comment</button><br/>
-<div name="addingComment">Priority: <input type="text">
-Text:<input type="text"><br/>
-<button>Add</button><button onclick="toggle(addingComment)">Cancel</button><br/></div>
+<div name="addingComment">Comments:<input type="text" id="newCommentText"><br/>
+<button onclick="addComment()">Add</button><button onclick="toggle(addingComment)">Cancel</button><br/></div>
 <!-- display -->
 <br/>
 <table id="tableId">
 <tr><th>Date</th><th>User</th><th>Event</th></tr>
+<?php
+$history = $goal->listHistory();
+foreach($history as $histItem)
+{
+   echo "<tr><td>" . $histItem[0] . "</td><td>" . $histItem[1] . "</td><td>" . $histItem[2] . "</td></tr>";
+}
+?>
 </table>
 <br/>
 
