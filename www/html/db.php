@@ -21,8 +21,11 @@ class Goal {
       return $this->title;
    }
 
-   function setTitle()
+   function setTitle($value)
    {
+      $sql = "UPDATE Dead.Goals SET title = '" . $value . "' WHERE id = '" . $this->id . "'";
+      $this->db->conn->exec($sql);
+      $this->title = $value;
    }
 
    function getPriority()
@@ -46,6 +49,12 @@ class Goal {
          . "'" . $userId . "', "
          . "'" . $text . "'"
          .  ")";
+      $this->db->conn->exec($sql);
+   }
+
+   function delete()
+   {
+      $sql = "DELETE FROM Dead.Goals WHERE id = '" . $this->id . "'";
       $this->db->conn->exec($sql);
    }
 
@@ -233,6 +242,14 @@ class Db {
    }
 
    // ------ step APIs -------
+
+   function goalHasSteps($goalID)
+   {
+      $query = $this->conn->prepare(
+         "SELECT id FROM Dead.Steps WHERE goalID = '" . $goalID . "'");
+      $query->execute();
+      return $query->fetchColumn() != false;
+   }
 
    function addStep($goalID)
    {

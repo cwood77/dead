@@ -34,3 +34,7 @@ th {
   background-color: #04AA6D;
   color: white;
 }
+
+input.wide {
+  width: 60%;
+}

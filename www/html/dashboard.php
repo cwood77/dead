@@ -38,7 +38,7 @@ function addRowHandlers() {
 <br/>
 
 <table id="tableId">
-<tr><th>Priority</th><th>Item</th></tr>
+<tr><th>Priority</th><th></th><th>Item</th></tr>
 <?php
 
 try
@@ -48,7 +48,16 @@ try
    $goals = $user->listGoals();
    foreach($goals as $goal)
    {
-      echo "<tr id='" . $goal['id'] . "'><td>" . $goal['priority'] . "</td><td>" . $goal['title'] . "</td></tr>";
+      echo "<tr id='" . $goal['id'] . "'><td>" . $goal['priority'] . "</td>";
+      if ($db->goalHasSteps($goal['id']))
+      {
+         echo "<td><img src='scheduled.png'></td>";
+      }
+      else
+      {
+         echo "<td></td>";
+      }
+      echo "<td>" . $goal['title'] . "</td></tr>";
    }
 }
 catch(PDOException $x)

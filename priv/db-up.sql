@@ -31,7 +31,7 @@ CREATE TABLE Dead.Steps (
    goalID INT(11) UNSIGNED NOT NULL,   
    title VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
    priority INT(8) UNSIGNED NOT NULL DEFAULT 4,
-   state ENUM('blocked', 'ready', 'inwork', 'complete'),
+   state ENUM('inwork', 'ready', 'blocked', 'complete'),
    PRIMARY KEY(id),
    FOREIGN KEY(goalID) REFERENCES Dead.Goals(id) ON DELETE CASCADE
 );

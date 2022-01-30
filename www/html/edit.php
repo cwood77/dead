@@ -19,14 +19,14 @@ $goal = $user->queryGoal($goalId);
 <head>
 <link rel="stylesheet" href="main.css"/>
 <title>Dead</title>
-<?php require 'api.php'; includeJsApis(array("addGoal","renderSteps","addStep","deleteStep","updateStep")); ?>
+<?php require 'api.php'; includeJsApis(array("editGoal","deleteGoal","renderSteps","addStep","deleteStep","updateStep")); ?>
 <script src="toggle.js"></script>
 <script>
 <?php echo 'var _owningUser = "' . $owningUser . '";'; ?>
 <?php echo 'var _goalId = "' . $goalId . '";'; ?>
 var _stepId = 0;
 
-function submit()
+function updateGoal()
 {
    // client-side validation
    var error = checkIfEmpty("name");
@@ -44,7 +44,16 @@ function submit()
    {
       window.location.href="dashboard.php";
    }
-   api.addGoal(_owningUser,name,priority,good);
+   api.editGoal(_goalId,_owningUser,name,priority,good);
+}
+
+function deleteGoal()
+{
+   var good = (json) =>
+   {
+      window.location.href="dashboard.php";
+   }
+   api.deleteGoal(_goalId,_owningUser,good);
 }
 
 let addingStep = {
@@ -95,6 +104,7 @@ function addDummyStep()
 
 function deleteStep(stepId)
 {
+   toggle(addingStep,false);
    api.deleteStep(stepId,function(){ refreshStepTable(); });
 }
 
@@ -123,7 +133,7 @@ function updateStep()
 
 <!-- basics -->
 <form>
-name: <input type="text" id="name" value="<?php echo $goal->getTitle(); ?>"><br/>
+name: <input type="text" id="name" class="wide" value="<?php echo $goal->getTitle(); ?>"><br/>
 priority: <select id="priority">
    <option>1</option>
    <option>2</option>
@@ -151,7 +161,7 @@ priority: <select id="priority">
       <option>3</option>
       <option>4</option>
    </select>
-   Step:<input type="text" id="editStepTitle"><br/>
+   Step:<input type="text" class="wide" id="editStepTitle"><br/>
 <button onclick="updateStep()">Update</button><button onclick="toggle(addingStep)">Cancel</button><br/></div>
 <!-- display -->
 <br/>
@@ -163,7 +173,7 @@ priority: <select id="priority">
 <hr>
 <!-- add panel -->
 <button name="addingCommentStart" onclick="toggle(addingComment)">Add Comment</button><br/>
-<div name="addingComment">Comments:<input type="text" id="newCommentText"><br/>
+<div name="addingComment">Comments:<input type="text" class="wide" id="newCommentText"><br/>
 <button onclick="addComment()">Add</button><button onclick="toggle(addingComment)">Cancel</button><br/></div>
 <!-- display -->
 <br/>
@@ -181,7 +191,8 @@ foreach($history as $histItem)
 
 <!-- global -->
 <hr>
-<button onclick="submit()">Submit</button>
+<button onclick="updateGoal()">Update</button>
+<button onclick="deleteGoal()">Delete</button>
 
 </body>
 </html>
