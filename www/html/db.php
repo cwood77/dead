@@ -231,6 +231,34 @@ class Db {
       $query->execute();
       return $query->fetchAll();
    }
+
+   // ------ step APIs -------
+
+   function addStep($goalID)
+   {
+      $sql = "INSERT INTO Dead.Steps (goalID, title, priority, state) VALUES ('" . $goalID . "', '--New Step--', '1', 'blocked')";
+      $this->conn->exec($sql);
+   }
+
+   function querySteps($goalID)
+   {
+      $query = $this->conn->prepare(
+         "SELECT id, state, priority, title FROM Dead.Steps WHERE goalID = '" . $goalID . "' ORDER BY state ASC, priority ASC, title ASC");
+      $query->execute();
+      return $query->fetchAll();
+   }
+
+   function deleteStep($stepID)
+   {
+      $sql = "DELETE FROM Dead.Steps WHERE id = '" . $stepID . "'";
+      $this->conn->exec($sql);
+   }
+
+   function modifyStep($stepID, $state, $priority, $title)
+   {
+      $sql = "UPDATE Dead.Steps SET state = '" . $state . "', priority = '" . $priority . "', title = '" . $title . "' WHERE id = '" . $stepID . "'";
+      $this->conn->exec($sql);
+   }
 }
 
 ?>

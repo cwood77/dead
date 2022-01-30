@@ -19,11 +19,12 @@ $goal = $user->queryGoal($goalId);
 <head>
 <link rel="stylesheet" href="main.css"/>
 <title>Dead</title>
-<?php require 'api.php'; includeJsApi("addGoal"); ?>
+<?php require 'api.php'; includeJsApis(array("addGoal","renderSteps","addStep","deleteStep","updateStep")); ?>
 <script src="toggle.js"></script>
 <script>
 <?php echo 'var _owningUser = "' . $owningUser . '";'; ?>
 <?php echo 'var _goalId = "' . $goalId . '";'; ?>
+var _stepId = 0;
 
 function submit()
 {
@@ -56,6 +57,15 @@ let addingComment = {
    label: "addingComment"
 };
 
+function refreshStepTable()
+{
+   var good = function(json)
+   {
+      document.getElementById("stepTable").innerHTML = json['stepTableHtml'];
+   }
+   api.renderSteps(_goalId,good);
+}
+
 function onload()
 {
    // init the panel
@@ -64,6 +74,8 @@ function onload()
 
    // update the select control (no way to do this in HTML)
    document.getElementById("priority").getElementsByTagName("option")[<?php echo $goal->getPriority(); ?>-1].selected = 'selected';
+
+   refreshStepTable();
 }
 
 function addComment()
@@ -74,6 +86,34 @@ function addComment()
 
    control.value = "";
    toggle(addingComment);
+}
+
+function addDummyStep()
+{
+   api.addStep(_goalId,function(){ refreshStepTable(); });
+}
+
+function deleteStep(stepId)
+{
+   api.deleteStep(stepId,function(){ refreshStepTable(); });
+}
+
+function editStep(stepId, state, priority, title)
+{
+   _stepId = stepId;
+   document.getElementById("editStepState").getElementsByClassName(state)[0].selected = 'selected';
+   document.getElementById("editStepPriority").getElementsByTagName("option")[priority-1].selected = 'selected';
+   document.getElementById("editStepTitle").value = title;
+   toggle(addingStep);
+}
+
+function updateStep()
+{
+   var state = document.getElementById("editStepState").value;
+   var priority = document.getElementById("editStepPriority").value;
+   var title = document.getElementById("editStepTitle").value;
+   api.updateStep(_stepId,state,priority,title,function(){ refreshStepTable(); });
+   toggle(addingStep);
 }
 
 </script>
@@ -95,15 +135,27 @@ priority: <select id="priority">
 
 <!-- steps -->
 <hr>
+<button onclick="addDummyStep()">Add Step</button><br/>
 <!-- add panel -->
-<button name="addingStepStart" onclick="toggle(addingStep)">Add Step</button><br/>
-<div name="addingStep">Priority: <input type="text">
-Text:<input type="text"><br/>
-<button>Add</button><button onclick="toggle(addingStep)">Cancel</button><br/></div>
+   <!--<button name="addingStepStart" onclick="toggle(addingStep)">Add Step</button><br/>-->
+<div name="addingStep">
+   State: <select id="editStepState">
+      <option class="blocked">blocked</option>
+      <option class="ready">ready</option>
+      <option class="inwork">inwork</option>
+      <option class="complete">complete</option>
+   </select>
+   Priority: <select id="editStepPriority">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+   </select>
+   Step:<input type="text" id="editStepTitle"><br/>
+<button onclick="updateStep()">Update</button><button onclick="toggle(addingStep)">Cancel</button><br/></div>
 <!-- display -->
 <br/>
-<table id="tableId">
-<tr><th>State</th><th>Priority</th><th>Step</th></tr>
+<table id="stepTable">
 </table>
 <br/>
 

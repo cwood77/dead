@@ -3,12 +3,7 @@
 require '/var/www/html/util.php';
 require '/var/www/html/db.php';
 
-session_start();
-if (empty($_SESSION['username']))
-{
-   redirect('index.php');
-}
-
+leaveIfNoSession();
 $checker = new ApiChecker();
 $owningUser = $checker->demandArg("As");
 $name = $checker->demandArg("Name");
