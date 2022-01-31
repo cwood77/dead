@@ -37,10 +37,15 @@ try
    if ($state == "goals")
    {
       $buttonLbl = "Show steps";
-      $html .= '<tr><th class=\"icon1\"></th><th>Pri</th><th>Goal</th></tr>';
+      $html .= '<tr><th class=\"icon1\"></th>';
+      if ($_SESSION['showall'])
+      {
+         $html .= "<th>User</th>";
+      }
+      $html .= '<th>Pri</th><th>Goal</th></tr>';
       $db = new Db();
       $user = $db->findUser($_SESSION['username']);
-      $goals = $user->listGoals();
+      $goals = $user->listGoals($_SESSION['showall']);
       foreach($goals as $goal)
       {
          $html .= "<tr onclick='clickRow(" . $goal['id'] . ")'>";
@@ -62,6 +67,10 @@ try
                $html .= "<td class='icon'><img src='done.png'></td>";
                break;
          }
+         if ($_SESSION['showall'])
+         {
+            $html .= "<td>" . $goal['userName'] . "</td>";
+         }
          $html .= "<td>" . $goal['priority'] . "</td>";
          $html .= "<td>" . $goal['title'] . "</td></tr>";
       }
@@ -70,10 +79,15 @@ try
    else
    {
       $buttonLbl = "Show goals";
-      $html .= '<tr><th class=\"other\" class=\"icon1\"></th><th class=\"other\">Pri</th><th class=\"other\">Goal</th><th class=\"other\">Step</th></tr>';
+      $html .= '<tr><th class=\"other\" class=\"icon1\"></th>';
+      if ($_SESSION['showall'])
+      {
+         $html .= '<th class=\"other\">User</th>';
+      }
+      $html .= '<th class=\"other\">Pri</th><th class=\"other\">Goal</th><th class=\"other\">Step</th></tr>';
       $db = new Db();
       $user = $db->findUser($_SESSION['username']);
-      $steps = $user->listSteps();
+      $steps = $user->listSteps($_SESSION['showall']);
       foreach($steps as $step)
       {
          $html .= "<tr onclick='clickRow(" . $step[4] . ")'>";
@@ -91,6 +105,10 @@ try
             case 'complete':
                $html .= "<td class='icon'><img src='done.png'></td>";
                break;
+         }
+         if ($_SESSION['showall'])
+         {
+            $html .= "<td>" . $step['5'] . "</td>";
          }
          $html .= "<td>" . $step['1'] . "</td>";
          $html .= "<td>" . $step['3'] . "</td>";

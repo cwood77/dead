@@ -128,18 +128,55 @@ class User {
       return new Goal($this->db, $gid, $title, 4);
    }
 
-   function listGoals()
+   function listGoals($all)
    {
-      $query = $this->db->conn->prepare(
-         "SELECT id, priority, title FROM Dead.Goals WHERE userID = '" . $this->id . "' ORDER BY priority ASC, title ASC");
+      $queryText = "SELECT userName, Dead.Goals.id, priority, title FROM Dead.Goals LEFT JOIN Dead.Users ON UserID = Dead.Users.id";
+      if (!$this->su)
+      {
+         $queryText .= " WHERE userID = '" . $this->id . "'";
+         if ($all)
+         {
+            $queryText .= $this->_buildQueryForUsersSharedWithMe();
+         }
+      }
+      $queryText .= " ORDER BY priority ASC, title ASC";
+      $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();
    }
 
-   function listSteps()
+   function _buildQueryForUsersSharedWithMe()
    {
       $query = $this->db->conn->prepare(
-         "SELECT Dead.Steps.title, Dead.Steps.priority, state, Dead.Goals.title, Dead.Steps.GoalID FROM Dead.Steps LEFT JOIN Dead.Goals ON Dead.Steps.goalID = Dead.Goals.id ORDER BY state ASC, Dead.Steps.priority DESC, Dead.Steps.title ASC");
+         "SELECT lookee FROM Dead.GoalsVisibleToUser WHERE looker = '" . $this->id . "'");
+      $query->execute();
+      $rows = $query->fetchAll();
+
+      $html = "";
+      foreach($rows as $row)
+      {
+         $html .= " OR userID = '" . $row[0] . "'";
+      }
+
+      return $html;
+   }
+
+   function listSteps($all)
+   {
+      $queryText =
+         "SELECT Dead.Steps.title, Dead.Steps.priority, state, Dead.Goals.title, Dead.Steps.GoalID, userName FROM Dead.Steps "
+         . "LEFT JOIN Dead.Goals ON Dead.Steps.goalID = Dead.Goals.id "
+         . "LEFT JOIN Dead.Users ON Dead.Goals.userID = Dead.Users.id";
+      if (!$this->su)
+      {
+         $queryText .= " WHERE Dead.Goals.UserID = '" . $this->id . "'";
+         if ($all)
+         {
+            $queryText .= $this->_buildQueryForUsersSharedWithMe();
+         }
+      }
+      $queryText .= " ORDER BY state ASC, Dead.Steps.priority DESC, Dead.Steps.title ASC";
+      $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();
    }
