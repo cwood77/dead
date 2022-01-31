@@ -40,7 +40,6 @@ function submit()
    }
    var good = (json) =>
    {
-      showMessage("login successful");
       window.location.href="dashboard.php";
    }
 

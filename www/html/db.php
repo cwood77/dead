@@ -241,6 +241,31 @@ class Db {
       return $query->fetchAll();
    }
 
+   // ------ migration APIs -------
+
+   function getVersion()
+   {
+      $query = $this->conn->prepare(
+         "SELECT version FROM Dead.Version");
+      $query->execute();
+      return $query->fetchColumn();
+   }
+
+   function listVersions()
+   {
+      $query = $this->conn->prepare(
+         "SELECT version, title FROM Dead.Migration ORDER BY version ASC");
+      $query->execute();
+      return $query->fetchAll();
+   }
+
+   function setVersion($version)
+   {
+      $query = $this->conn->prepare(
+         "UPDATE Dead.Version SET version = " . $version);
+      $query->execute();
+   }
+
    // ------ step APIs -------
 
    function goalHasSteps($goalID)
@@ -253,7 +278,7 @@ class Db {
 
    function addStep($goalID)
    {
-      $sql = "INSERT INTO Dead.Steps (goalID, title, priority, state) VALUES ('" . $goalID . "', '--New Step--', '1', 'blocked')";
+      $sql = "INSERT INTO Dead.Steps (goalID, title, priority, state) VALUES ('" . $goalID . "', '--New Step--', '3', 'ready')";
       $this->conn->exec($sql);
    }
 

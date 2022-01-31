@@ -38,3 +38,7 @@ th {
 input.wide {
   width: 60%;
 }
+
+button.deleteBtn {
+  background-color: #ffdf00;
+}

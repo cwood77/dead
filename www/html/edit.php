@@ -26,6 +26,28 @@ $goal = $user->queryGoal($goalId);
 <?php echo 'var _goalId = "' . $goalId . '";'; ?>
 var _stepId = 0;
 
+let addingStep = {
+   v: false,
+   label: "addingStep"
+};
+
+let addingComment = {
+   v: false,
+   label: "addingComment"
+};
+
+function onload()
+{
+   // init the panel
+   toggle(addingStep,false);
+   toggle(addingComment,false);
+
+   // update the select control (no way to do this in HTML)
+   document.getElementById("priority").getElementsByTagName("option")[<?php echo $goal->getPriority(); ?>-1].selected = 'selected';
+
+   refreshStepTable();
+}
+
 function updateGoal()
 {
    // client-side validation
@@ -56,16 +78,6 @@ function deleteGoal()
    api.deleteGoal(_goalId,_owningUser,good);
 }
 
-let addingStep = {
-   v: false,
-   label: "addingStep"
-};
-
-let addingComment = {
-   v: false,
-   label: "addingComment"
-};
-
 function refreshStepTable()
 {
    var good = function(json)
@@ -75,16 +87,41 @@ function refreshStepTable()
    api.renderSteps(_goalId,good);
 }
 
-function onload()
+function addDummyStep()
 {
-   // init the panel
-   toggle(addingStep,false);
-   toggle(addingComment,false);
+   api.addStep(_goalId,function(){ refreshStepTable(); });
+}
 
-   // update the select control (no way to do this in HTML)
-   document.getElementById("priority").getElementsByTagName("option")[<?php echo $goal->getPriority(); ?>-1].selected = 'selected';
+function deleteStep(stepId)
+{
+   api.deleteStep(stepId,function(){ refreshStepTable(); });
+   toggle(addingStep);
+}
 
-   refreshStepTable();
+function maybeSelectText(control)
+{
+   if (control.value == "--New Step--")
+   {
+      control.setSelectionRange(0, control.value.length);
+   }
+}
+
+function editStep(stepId, state, priority, title)
+{
+   _stepId = stepId;
+   document.getElementById("editStepState").getElementsByClassName(state)[0].selected = 'selected';
+   document.getElementById("editStepPriority").getElementsByTagName("option")[priority-1].selected = 'selected';
+   document.getElementById("editStepTitle").value = title;
+   toggle(addingStep,true);
+}
+
+function updateStep()
+{
+   var state = document.getElementById("editStepState").value;
+   var priority = document.getElementById("editStepPriority").value;
+   var title = document.getElementById("editStepTitle").value;
+   api.updateStep(_stepId,state,priority,title,function(){ refreshStepTable(); });
+   toggle(addingStep);
 }
 
 function addComment()
@@ -95,35 +132,6 @@ function addComment()
 
    control.value = "";
    toggle(addingComment);
-}
-
-function addDummyStep()
-{
-   api.addStep(_goalId,function(){ refreshStepTable(); });
-}
-
-function deleteStep(stepId)
-{
-   toggle(addingStep,false);
-   api.deleteStep(stepId,function(){ refreshStepTable(); });
-}
-
-function editStep(stepId, state, priority, title)
-{
-   _stepId = stepId;
-   document.getElementById("editStepState").getElementsByClassName(state)[0].selected = 'selected';
-   document.getElementById("editStepPriority").getElementsByTagName("option")[priority-1].selected = 'selected';
-   document.getElementById("editStepTitle").value = title;
-   toggle(addingStep);
-}
-
-function updateStep()
-{
-   var state = document.getElementById("editStepState").value;
-   var priority = document.getElementById("editStepPriority").value;
-   var title = document.getElementById("editStepTitle").value;
-   api.updateStep(_stepId,state,priority,title,function(){ refreshStepTable(); });
-   toggle(addingStep);
 }
 
 </script>
@@ -142,6 +150,7 @@ priority: <select id="priority">
 </select><br/>
 <p class="error" id="message"/>
 </form>
+<button onclick="updateGoal()">Save</button>
 
 <!-- steps -->
 <hr>
@@ -161,8 +170,8 @@ priority: <select id="priority">
       <option>3</option>
       <option>4</option>
    </select>
-   Step:<input type="text" class="wide" id="editStepTitle"><br/>
-<button onclick="updateStep()">Update</button><button onclick="toggle(addingStep)">Cancel</button><br/></div>
+   Step:<input type="text" class="wide" id="editStepTitle" onclick="maybeSelectText(this)"><br/>
+<button onclick="updateStep()">Update</button><button onclick="toggle(addingStep)">Cancel</button><button onclick="deleteStep(_stepId)" class="deleteBtn">Delete Step</button><br/></div>
 <!-- display -->
 <br/>
 <table id="stepTable">
@@ -191,8 +200,7 @@ foreach($history as $histItem)
 
 <!-- global -->
 <hr>
-<button onclick="updateGoal()">Update</button>
-<button onclick="deleteGoal()">Delete</button>
+<button onclick="deleteGoal()" class="deleteBtn">Delete Goal</button>
 
 </body>
 </html>

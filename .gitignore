@@ -2,6 +2,9 @@
 /.git
 /.vagrant
 
+# too big
+/www/backup.sql
+
 # generated secrets
 /www/*secrets.php
 
