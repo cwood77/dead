@@ -19,6 +19,7 @@ if ($user != null)
       {
          session_start();
          $_SESSION['username'] = $username;
+         $_SESSION['showall'] = false;
          echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
       }
       else
