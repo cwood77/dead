@@ -156,7 +156,6 @@ priority: <select id="priority">
 <hr>
 <button onclick="addDummyStep()">Add Step</button><br/>
 <!-- add panel -->
-   <!--<button name="addingStepStart" onclick="toggle(addingStep)">Add Step</button><br/>-->
 <div name="addingStep">
    State: <select id="editStepState">
       <option class="blocked">blocked</option>

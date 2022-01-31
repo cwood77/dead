@@ -38,7 +38,7 @@ function addRowHandlers() {
 <br/>
 
 <table id="tableId">
-<tr><th>Pri</th><th></th><th>Goal</th></tr>
+<tr><th class="icon1"></th><th>Pri</th><th>Goal</th></tr>
 <?php
 
 try
@@ -48,15 +48,26 @@ try
    $goals = $user->listGoals();
    foreach($goals as $goal)
    {
-      echo "<tr id='" . $goal['id'] . "'><td>" . $goal['priority'] . "</td>";
-      if ($db->goalHasSteps($goal['id']))
+      echo "<tr id='" . $goal['id'] . "'>";
+      switch($db->getGoalStepState($goal['id']))
       {
-         echo "<td><img src='scheduled.png'></td>";
+         case 'nosteps':
+            echo "<td class='icon'><img src='nosteps.png'></td>";
+            break;
+         case 'inwork':
+            echo "<td class='icon'><img src='inwork.png'></td>";
+            break;
+         case 'ready':
+            echo "<td class='icon'><img src='blank.png'></td>";
+            break;
+         case 'blocked':
+            echo "<td class='icon'><img src='blocked.png'></td>";
+            break;
+         case 'complete':
+            echo "<td class='icon'><img src='done.png'></td>";
+            break;
       }
-      else
-      {
-         echo "<td></td>";
-      }
+      echo "<td>" . $goal['priority'] . "</td>";
       echo "<td>" . $goal['title'] . "</td></tr>";
    }
 }

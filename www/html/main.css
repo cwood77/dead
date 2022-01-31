@@ -35,6 +35,9 @@ th {
   color: white;
 }
 
+th.icon { background-color: #FFFFFF; } /*border: 0px; }*/
+td.icon { background-color: #FFFFFF; } /*border: 0px; }*/
+
 input.wide {
   width: 60%;
 }

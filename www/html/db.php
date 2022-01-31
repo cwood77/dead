@@ -349,9 +349,25 @@ class Db {
       return $query->fetchColumn() != false;
    }
 
-   function addStep($goalID)
+   function getGoalStepState($goalID)
    {
-      $sql = "INSERT INTO Dead.Steps (goalID, title, priority, state) VALUES ('" . $goalID . "', '--New Step--', '3', 'ready')";
+      $query = $this->conn->prepare(
+         "SELECT state FROM Dead.Steps LEFT JOIN Dead.Goals ON Dead.Steps.goalID = Dead.Goals.id WHERE Dead.Steps.goalID = '" . $goalID . "' ORDER BY state ASC LIMIT 1");
+      $query->execute();
+      $rows = $query->fetchAll();
+      if (empty($rows))
+      {
+         return "nosteps";
+      }
+      return $rows[0][0];
+   }
+
+   function addStep($username, $goalID)
+   {
+      $prefs = $this->getUserPrefs($username);
+
+      $sql = "INSERT INTO Dead.Steps (goalID, title, priority, state) VALUES ('"
+         . $goalID . "', '--New Step--', '" . $prefs['stepPriority'] . "', '" . $prefs['stepState'] . "')";
       $this->conn->exec($sql);
    }
 
