@@ -35,6 +35,10 @@ th {
   color: white;
 }
 
+th.other {
+  background-color: #0465aa;
+}
+
 th.icon { background-color: #FFFFFF; } /*border: 0px; }*/
 td.icon { background-color: #FFFFFF; } /*border: 0px; }*/
 

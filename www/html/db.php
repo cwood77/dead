@@ -136,6 +136,14 @@ class User {
       return $query->fetchAll();
    }
 
+   function listSteps()
+   {
+      $query = $this->db->conn->prepare(
+         "SELECT Dead.Steps.title, Dead.Steps.priority, state, Dead.Goals.title, Dead.Steps.GoalID FROM Dead.Steps LEFT JOIN Dead.Goals ON Dead.Steps.goalID = Dead.Goals.id ORDER BY state ASC, Dead.Steps.priority DESC, Dead.Steps.title ASC");
+      $query->execute();
+      return $query->fetchAll();
+   }
+
    function queryGoal($gid)
    {
       $query = $this->db->conn->prepare(
