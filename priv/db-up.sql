@@ -48,8 +48,23 @@ CREATE TABLE Dead.GoalHistory (
    FOREIGN KEY (userID) REFERENCES Dead.Users(id)
 );
 
+CREATE TABLE Dead.Migration (
+   version INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+   title VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+   PRIMARY KEY (version)
+);
+
+CREATE TABLE Dead.Version (
+   version INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+   PRIMARY KEY (version)
+);
+
 INSERT INTO Dead.Users (userName, superuser, password) VALUES(
    "McDaddy",
    TRUE,
    "$2y$10$r7fb3j4cOBtCmYKTU2Kwk.kc1Sl5KqK6XrBprKUN4bOZ2Br0YkqFS"
+);
+
+INSERT INTO Dead.Version (version) VALUES(
+   1
 );

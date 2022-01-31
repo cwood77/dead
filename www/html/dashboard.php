@@ -38,7 +38,7 @@ function addRowHandlers() {
 <br/>
 
 <table id="tableId">
-<tr><th>Priority</th><th></th><th>Item</th></tr>
+<tr><th>Pri</th><th></th><th>Goal</th></tr>
 <?php
 
 try

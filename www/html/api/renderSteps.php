@@ -13,16 +13,11 @@ try
    $db = new Db();
    $results = $db->querySteps($goalId);
 
-   $html = "<tr><th>Action</ht><th>State</th><th>Priority</th><th>Step</th></tr>";
+   $html = "<tr><th>State</th><th>Pri</th><th>Step</th></tr>";
    foreach($results as $row)
    {
       $rowText
-         = "<tr>"
-
-         . "<td>"
-         . "<button onclick='deleteStep(" . $row['id'] . ")'>X</button>"
-         . "<button onclick='editStep(" . $row['id'] . ',\"' . $row['state'] . '\",\"' . $row['priority'] . '\",\"' . $row['title'] . '\"' . ")'>.</button>"
-         . "</td>"
+         = "<tr onclick='editStep(" . $row['id'] . ',\"' . $row['state'] . '\",\"' . $row['priority'] . '\",\"' . $row['title'] . '\"' . ")'>"
 
          . "<td>"
          . $row['state']
