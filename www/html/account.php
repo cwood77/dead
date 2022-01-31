@@ -11,8 +11,15 @@ leaveIfNoSession();
 <head>
 <link rel="stylesheet" href="main.css"/>
 <title>Dead</title>
-<?php require 'api.php'; includeJsApis(array("logout","setSharing")); ?>
+<?php require 'api.php'; includeJsApis(array("logout","setSharing","modUser","prefs")); ?>
+<script src="toggle.js"></script>
 <script>
+
+function onload()
+{
+   modUser(".",".");
+   loadPrefs();
+}
 
 function logout()
 {
@@ -29,57 +36,83 @@ function updateSharing(checked, looker)
    api.setSharing(looker, checked, function(){});
 }
 
+function modUser(userId, op)
+{
+   var good = function(json)
+   {
+      document.getElementById("summary").innerHTML = "site has " + json['count'] + " registered user(s)";
+      document.getElementById("userTable").innerHTML = json['userTableHtml'];
+   }
+   api.modUser(userId,op,good);
+}
+
+let prefMod = {
+   v: false,
+   label: "prefMod"
+};
+
+function loadPrefs()
+{
+   toggle(prefMod,false);
+
+   var good = function(json)
+   {
+      document.getElementById("defGoalPri").getElementsByTagName("option")[json['goalPri']-1].selected = 'selected';
+      document.getElementById("defStepPri").value = json['stepPri'];
+      document.getElementById("defStepState").value = json['stepState'];
+   }
+   api.getPrefs(good);
+}
+
+function savePrefs()
+{
+   toggle(prefMod,false);
+
+   var good = function(json)
+   {
+      document.getElementById("defGoalPri").getElementsByTagName("option")[json['goalPri']-1].selected = 'selected';
+      document.getElementById("defStepPri").value = json['stepPri'];
+      document.getElementById("defStepState").value = json['stepState'];
+   }
+   api.updatePrefs(
+      document.getElementById("defGoalPri").value,
+      document.getElementById("defStepPri").value,
+      document.getElementById("defStepState").value,
+      good);
+}
+
 </script>
 </head>
-<body>
+<body onload="onload()">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<br/>
 
-<?php
-try
-{
-   $db = new Db();
-   $user = $db->findUser($_SESSION['username']);
-   $sharing = $user->getSharingInfo();
-   $users = $db->listUsers();
-   echo count($users) . " user(s)";
-}
-catch(PDOException $x)
-{
-   echo "DB error: " . $x->getMessage();
-}
-?><br/>
-
-<table>
-<tr><th>Username</th><th>Superuser</th><th>Share my goals with</th></tr>
-<?php
-foreach($users as $user)
-{
-   $superuser = "";
-   if ($user['superuser'])
-   {
-      $superuser = "Y";
-   }
-
-   echo "<tr><td>" . $user['userName'] . "</td><td>" . $superuser . "</td>";
-
-   if ($_SESSION['username'] == $user['userName'])
-   {
-      echo "<td></td></tr>";
-   }
-   else
-   {
-      echo "<td><input type='checkbox'";
-      if($sharing[$user['userName']] == true)
-      {
-         echo " checked";
-      }
-      echo " onclick='updateSharing(this.checked," . '"' . $user['userName'] . '"' . ")'></td></tr>";
-   }
-}
-
-?>
+<p id="summary"></p>
+<table id="userTable">
+<tr><th>Username</th><th>Superuser</th><th>Share my goals with</th><th></th></tr>
 </table>
+<br/>
+Preferences
+   <button name="prefModStart" onclick="toggle(prefMod)">Modify</button>
+   <button name="prefMod" onclick="savePrefs()" >Save</button>
+   <button name="prefMod" onclick="loadPrefs()">Cancel</button> </br>
+Default goal priority <select name="prefModDuring" id="defGoalPri">
+   <option>1</option>
+   <option>2</option>
+   <option>3</option>
+   <option>4</option>
+</select> </br>
+Default step priority <select name="prefModDuring" id="defStepPri">
+   <option>1</option>
+   <option>2</option>
+   <option>3</option>
+   <option>4</option>
+</select> </br>
+Default step state: <select name="prefModDuring" id="defStepState">
+   <option class="blocked">blocked</option>
+   <option class="ready">ready</option>
+   <option class="inwork">inwork</option>
+   <option class="complete">complete</option>
+</select><br/>
 <br/>
 <button onclick="logout()">Logout</button>
 

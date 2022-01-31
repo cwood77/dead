@@ -2,6 +2,8 @@
 
 require '/var/www/db-secrets.php';
 
+// get prefs from username - add/edit/acct usecase
+
 class Goal {
    private $db;
    private $id;
@@ -88,11 +90,18 @@ class Goal {
 class User {
    private $db;
    public $id;
+   private $su;
 
-   function __construct($db, $id)
+   function __construct($db, $id, $su)
    {
       $this->db = $db;
       $this->id = $id;
+      $this->su = $su;
+   }
+
+   function isSuper()
+   {
+      return $this->su;
    }
 
    function login($password)
@@ -212,12 +221,12 @@ class Db {
    {
       try
       {
-         $query = $this->conn->prepare("SELECT id FROM Users WHERE userName='" . $username . "'");
+         $query = $this->conn->prepare("SELECT id, superuser FROM Users WHERE userName='" . $username . "'");
          $query->execute();
-         $id = $query->fetchColumn();
-         if ($id != false)
+         $rows = $query->fetchAll();
+         if (!empty($rows))
          {
-            return new User($this,$id);
+            return new User($this,$rows[0][0],$rows[0][1]);
          }
       }
       catch(PDOException $x)
@@ -231,14 +240,78 @@ class Db {
    {
       $sql = "INSERT INTO Users (password, userName) VALUES ('" . $password . "', '" . $username . "')";
       $this->conn->exec($sql);
+
+      $query = $this->conn->prepare("SELECT LAST_INSERT_ID();");
+      $query->execute();
+      $userId = $query->fetchColumn();
+
+      $sql = "INSERT INTO UserPrefs (id) VALUES ('" . $userId . "')";
+      $this->conn->exec($sql);
    }
 
    function listUsers()
    {
       $query = $this->conn->prepare(
-         "SELECT userName, superuser FROM Dead.Users ORDER BY userName ASC");
+         "SELECT id, userName, superuser FROM Dead.Users ORDER BY userName ASC");
       $query->execute();
       return $query->fetchAll();
+   }
+
+   function modUser($userId, $op)
+   {
+      if ($op == "s")
+      {
+         // toggle superuser
+         $query = $this->conn->prepare(
+            "SELECT superuser FROM Dead.Users WHERE id = " . $userId);
+         $query->execute();
+         $su = $query->fetchColumn();
+         if($su)
+         {
+            $su = 0;
+         }
+         else
+         {
+            $su = 1;
+         }
+         $query = $this->conn->prepare(
+            "UPDATE Dead.Users SET superuser = " . $su . " WHERE id = '" . $userId . "'");
+         $query->execute();
+      }
+      else if($op == "f")
+      {
+         $query = $this->conn->prepare(
+            "SELECT userName FROM Dead.Users WHERE id = " . $userId);
+         $query->execute();
+         $name = $query->fetchColumn();
+
+         $query = $this->conn->prepare(
+            "UPDATE Dead.Users SET password = '" . password_hash($name, PASSWORD_DEFAULT) . "' WHERE id = '" . $userId . "'");
+         $query->execute();
+      }
+      else if($op == "d")
+      {
+         $sql = "DELETE FROM Dead.Users WHERE id = '" . $userId . "'";
+         $this->conn->exec($sql);
+      }
+      else
+      {
+         echo "not implemented";
+      }
+   }
+
+   function setUserPrefs($username, $defGoalPri, $defStepPri, $defStepState)
+   {
+      $sql = "UPDATE Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.Users.id = Dead.UserPrefs.id  SET goalPriority = '" . $defGoalPri . "', stepPriority = '" . $defStepPri . "', stepState = '" . $defStepState . "' WHERE userName = '" . $username . "'";
+      $this->conn->exec($sql);
+   }
+
+   function getUserPrefs($username)
+   {
+      $query = $this->conn->prepare(
+         "SELECT goalPriority, stepPriority, stepState FROM Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.UserPrefs.id = Dead.Users.id WHERE userName = '" . $username . "'");
+      $query->execute();
+      return $query->fetchAll()[0];
    }
 
    // ------ migration APIs -------
