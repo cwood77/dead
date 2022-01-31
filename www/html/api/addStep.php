@@ -11,7 +11,7 @@ $checker->check();
 try
 {
    $db = new Db();
-   $db->addStep($goalId);
+   $db->addStep($_SESSION['username'],$goalId);
 
    echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
 }

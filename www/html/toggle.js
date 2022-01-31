@@ -29,6 +29,11 @@ function toggle(state, setTo = null)
       {
          items[i].disabled = false;
       }
+      var items = document.getElementsByName(state.label + "During");
+      for(i = 0; i < items.length; i++)
+      {
+         items[i].disabled = true;
+      }
       state.v = false;
    }
    else
@@ -43,6 +48,11 @@ function toggle(state, setTo = null)
       for(i = 0; i < items.length; i++)
       {
          items[i].disabled = true;
+      }
+      var items = document.getElementsByName(state.label + "During");
+      for(i = 0; i < items.length; i++)
+      {
+         items[i].disabled = false;
       }
       state.v = true;
    }
