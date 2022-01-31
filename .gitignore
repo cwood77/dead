@@ -3,7 +3,7 @@
 /.vagrant
 
 # too big
-/www/backup.swl
+/www/backup.sql
 
 # generated secrets
 /www/*secrets.php
