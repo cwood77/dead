@@ -157,6 +157,7 @@ priority: <select id="priority">
 <button onclick="addDummyStep()">Add Step</button><br/>
 <!-- add panel -->
 <div name="addingStep">
+<br/>
    State: <select id="editStepState">
       <option class="blocked">blocked</option>
       <option class="ready">ready</option>
@@ -170,7 +171,8 @@ priority: <select id="priority">
       <option>4</option>
    </select>
    Step:<input type="text" class="wide" id="editStepTitle" onclick="maybeSelectText(this)"><br/>
-<button onclick="updateStep()">Update</button><button onclick="toggle(addingStep)">Cancel</button><button onclick="deleteStep(_stepId)" class="deleteBtn">Delete Step</button><br/></div>
+<br/>
+<button onclick="updateStep()">Update</button>      <button onclick="toggle(addingStep)">Cancel</button>    <button onclick="deleteStep(_stepId)" class="deleteBtn">Delete Step</button><br/></div>
 <!-- display -->
 <br/>
 <table id="stepTable">
@@ -179,10 +181,13 @@ priority: <select id="priority">
 
 <!-- comments -->
 <hr>
-<!-- add panel -->
 <button name="addingCommentStart" onclick="toggle(addingComment)">Add Comment</button><br/>
-<div name="addingComment">Comments:<input type="text" class="wide" id="newCommentText"><br/>
-<button onclick="addComment()">Add</button><button onclick="toggle(addingComment)">Cancel</button><br/></div>
+<!-- add panel -->
+<div name="addingComment">
+<br/>
+Comments:<input type="text" class="wide" id="newCommentText"><br/>
+<br/>
+<button onclick="addComment()">Add</button>    <button onclick="toggle(addingComment)">Cancel</button><br/></div>
 <!-- display -->
 <br/>
 <table id="tableId">
