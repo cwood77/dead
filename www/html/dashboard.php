@@ -14,27 +14,9 @@ leaveIfNoSession();
 <?php require 'api.php'; includeJsApis(array("toggleDashboard","showAll")); ?>
 <script>
 
-<?php
-
-$db = new Db();
-$user = $db->findUser($_SESSION['username']);
-echo "var _su = " . ($user->isSuper() ? "true" : "false") . ";";
-
-?>
-
 function load()
 {
-/*   if(_su)
-   {
-      var check = document.getElementById("showAllCheckbox");
-      check.checked = "checked";
-      check.disabled = true;
-      setShowAll(true);
-   }
-   else*/
-   {
-      toggleView(false);
-   }
+   toggleView(false);
 }
 
 function toggleView(doToggle)
