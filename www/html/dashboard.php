@@ -14,27 +14,9 @@ leaveIfNoSession();
 <?php require 'api.php'; includeJsApis(array("toggleDashboard","showAll")); ?>
 <script>
 
-<?php
-
-$db = new Db();
-$user = $db->findUser($_SESSION['username']);
-echo "var _su = " . ($user->isSuper() ? "true" : "false") . ";";
-
-?>
-
 function load()
 {
-   if(_su)
-   {
-      var check = document.getElementById("showAllCheckbox");
-      check.checked = "checked";
-      check.disabled = true;
-      setShowAll(true);
-   }
-   else
-   {
-      toggleView(false);
-   }
+   toggleView(false);
 }
 
 function toggleView(doToggle)
@@ -65,7 +47,7 @@ function setShowAll(checkbox)
 </head>
 <body onload="load()">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<?php echo "Welcome <b>" . $_SESSION['username']; echo ($user->isSuper() ? " [SUPERUSER]" : ""); ?></b> --- Show all users shared with me: <input id="showAllCheckbox" type="checkbox" onclick="setShowAll(this)" <?php echo ($_SESSION['showall']) ? "checked" : ""; ?> ><br/>
+<?php echo "Welcome <b>" . $_SESSION['username']; echo ($user->isSuper() ? " [SUPERUSER]" : ""); ?></b> --- Show all users<?php echo ($user->isSuper()?"":" shared with me"); ?>: <input id="showAllCheckbox" type="checkbox" onclick="setShowAll(this)" <?php echo ($_SESSION['showall']) ? "checked" : ""; ?> ><br/>
 <br/>
 
 <button onclick="document.location='add.php?AsUser=<?php echo $_SESSION['username']; ?>'">Add</button><br/>
