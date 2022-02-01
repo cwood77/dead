@@ -24,14 +24,14 @@ echo "var _su = " . ($user->isSuper() ? "true" : "false") . ";";
 
 function load()
 {
-   if(_su)
+/*   if(_su)
    {
       var check = document.getElementById("showAllCheckbox");
       check.checked = "checked";
       check.disabled = true;
       setShowAll(true);
    }
-   else
+   else*/
    {
       toggleView(false);
    }
@@ -65,7 +65,7 @@ function setShowAll(checkbox)
 </head>
 <body onload="load()">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<?php echo "Welcome <b>" . $_SESSION['username']; echo ($user->isSuper() ? " [SUPERUSER]" : ""); ?></b> --- Show all users shared with me: <input id="showAllCheckbox" type="checkbox" onclick="setShowAll(this)" <?php echo ($_SESSION['showall']) ? "checked" : ""; ?> ><br/>
+<?php echo "Welcome <b>" . $_SESSION['username']; echo ($user->isSuper() ? " [SUPERUSER]" : ""); ?></b> --- Show all users<?php echo ($user->isSuper()?"":" shared with me"); ?>: <input id="showAllCheckbox" type="checkbox" onclick="setShowAll(this)" <?php echo ($_SESSION['showall']) ? "checked" : ""; ?> ><br/>
 <br/>
 
 <button onclick="document.location='add.php?AsUser=<?php echo $_SESSION['username']; ?>'">Add</button><br/>

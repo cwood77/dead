@@ -131,7 +131,14 @@ class User {
    function listGoals($all)
    {
       $queryText = "SELECT userName, Dead.Goals.id, priority, title FROM Dead.Goals LEFT JOIN Dead.Users ON UserID = Dead.Users.id";
-      if (!$this->su)
+      if ($this->su)
+      {
+         if (!$all)
+         {
+            $queryText .= " WHERE userID = '" . $this->id . "'";
+         }
+      }
+      else
       {
          $queryText .= " WHERE userID = '" . $this->id . "'";
          if ($all)
@@ -167,7 +174,14 @@ class User {
          "SELECT Dead.Steps.title, Dead.Steps.priority, state, Dead.Goals.title, Dead.Steps.GoalID, userName FROM Dead.Steps "
          . "LEFT JOIN Dead.Goals ON Dead.Steps.goalID = Dead.Goals.id "
          . "LEFT JOIN Dead.Users ON Dead.Goals.userID = Dead.Users.id";
-      if (!$this->su)
+      if ($this->su)
+      {
+         if (!$all)
+         {
+            $queryText .= " WHERE Dead.Goals.UserID = '" . $this->id . "'";
+         }
+      }
+      else
       {
          $queryText .= " WHERE Dead.Goals.UserID = '" . $this->id . "'";
          if ($all)
