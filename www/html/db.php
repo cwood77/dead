@@ -87,6 +87,81 @@ class Goal {
    }
 }
 
+class EventIterator {
+   public $currentYear;
+   public $durations;
+   public $total;
+
+   function __construct()
+   {
+      $this->currentYear = intval(date("Y"));
+      $this->durations = array();
+      $this->total = 0;
+   }
+
+   function advance($event)
+   {
+      $difference = $event->deadline - $this->currentYear;
+      $this->currentYear = $event->deadline;
+
+      array_push($this->durations,$difference);
+      $this->total += $difference;
+   }
+
+   // return array of pairs (%,dur)
+   function compute()
+   {
+      $rval = array();
+      foreach($this->durations as $dur)
+      {
+         array_push($rval,array($dur / $this->total * 100.0, $dur));
+      }
+      return $rval;
+   }
+};
+
+class Event {
+   public $name;
+   public $deadline;
+
+   function __construct($name, $deadline)
+   {
+      $this->name = $name;
+      $this->deadline = intval($deadline);
+   }
+}
+
+class Timeline {
+   private $db;
+   private $user;
+   private $events;
+
+   function __construct($db, $user)
+   {
+      $this->db = $db;
+      $this->user = $user;
+      $this->events = null;
+   }
+
+   function listEvents()
+   {
+      if ($this->events == null)
+      {
+         $this->events = array(
+            new Event("Kiddos at home","2028"),
+            new Event("College","2032"),
+            new Event("Empty Nester","2042"),
+            new Event("Retired","2050")
+         );
+      }
+      return $this->events;
+   }
+
+   function setEvents($newEvents)
+   {
+   }
+}
+
 class User {
    private $db;
    public $id;
@@ -259,6 +334,11 @@ class User {
             $this->db->conn->exec($sql);
          }
       }
+   }
+
+   function timeline()
+   {
+      return new Timeline($this->db, $this);
    }
 }
 

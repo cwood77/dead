@@ -4,6 +4,8 @@ require 'util.php';
 require 'db.php';
 
 leaveIfNoSession();
+$db = new Db();
+$user = $db->findUser($_SESSION['username']);
 
 ?>
 
@@ -47,6 +49,7 @@ function setShowAll(checkbox)
 </head>
 <body onload="load()">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php require '_timeline.php'; echo renderTimeline(); ?>
 <?php echo "Welcome <b>" . $_SESSION['username']; echo ($user->isSuper() ? " [SUPERUSER]" : ""); ?></b> --- Show all users<?php echo ($user->isSuper()?"":" shared with me"); ?>: <input id="showAllCheckbox" type="checkbox" onclick="setShowAll(this)" <?php echo ($_SESSION['showall']) ? "checked" : ""; ?> ><br/>
 <br/>
 
