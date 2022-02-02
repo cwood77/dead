@@ -2,6 +2,7 @@
 
 require '/var/www/html/util.php';
 require '/var/www/html/db.php';
+require '/var/www/html/_timeline.php';
 
 leaveIfNoSession();
 $checker = new ApiChecker();
@@ -37,7 +38,7 @@ try
    if ($state == "goals")
    {
       $buttonLbl = "Show steps";
-      $html .= '<tr><th class=\"icon1\"></th>';
+      $html .= '<tr><th></th><th class=\"icon1\"></th>';
       if ($_SESSION['showall'])
       {
          $html .= "<th>User</th>";
@@ -46,9 +47,13 @@ try
       $db = new Db();
       $user = $db->findUser($_SESSION['username']);
       $goals = $user->listGoals($_SESSION['showall']);
+      $colorer = new EventColorer($user->timeline());
       foreach($goals as $goal)
       {
+         $goalObj = new Goal($db, $goal['id'], $goal['title'], $goal['priority']);
+
          $html .= "<tr onclick='clickRow(" . $goal['id'] . ")'>";
+         $html .= "<td style='background-color: #" . $colorer->getColorOf($goalObj->getMilestone()) . "'></td>";
          switch($db->getGoalStepState($goal['id']))
          {
             case 'nosteps':

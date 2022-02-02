@@ -2,6 +2,7 @@
 
 require 'util.php';
 require 'db.php';
+require '_timeline.php';
 
 leaveIfNoSession();
 $checker = new FrontEndChecker();
@@ -45,7 +46,53 @@ function onload()
    // update the select control (no way to do this in HTML)
    document.getElementById("priority").getElementsByTagName("option")[<?php echo $goal->getPriority(); ?>-1].selected = 'selected';
 
+   populateMilestonesAndWarn();
+
    refreshStepTable();
+}
+
+function populateMilestonesAndWarn()
+{
+   var ans = "<?php echo $goal->getMilestone(); ?>";
+
+   var milestones = <?php echo generateTimelineJsEvents(); ?>;
+   var optionHtml = "";
+   var found = false;
+   for(var i=0;i<milestones.length;i++)
+   {
+      var selected = "";
+      if(milestones[i] == ans)
+      {
+         selected = " selected";
+         found = true;
+      }
+      optionHtml += "<option" + selected + ">" + milestones[i] + "</option>";
+   }
+   if(!found)
+   {
+      if(ans == "(none)")
+      {
+      }
+      else if(ans == "")
+      {
+      }
+      else
+      {
+         document.getElementById("milestone-link-warning").innerHTML = "milestone '" + ans + "' dosen't exist";
+      }
+      optionHtml += "<option selected>(none)</option>";
+   }
+   else
+   {
+      optionHtml += "<option>(none)</option>";
+   }
+
+   document.getElementById("milestone").innerHTML = optionHtml;
+}
+
+function onMilestoneChanged()
+{
+   document.getElementById("milestone-link-warning").innerHTML = "";
 }
 
 function updateGoal()
@@ -61,12 +108,13 @@ function updateGoal()
    // latch vars
    var name = document.getElementById("name").value;
    var priority = document.getElementById("priority").value;
+   var milestone = document.getElementById("milestone").value;
 
    var good = (json) =>
    {
       window.location.href="dashboard.php";
    }
-   api.editGoal(_goalId,_owningUser,name,priority,good);
+   api.editGoal(_goalId,_owningUser,name,priority,milestone,good);
 }
 
 function deleteGoal()
@@ -148,6 +196,8 @@ priority: <select id="priority">
    <option>3</option>
    <option>4</option>
 </select><br/>
+milestone: <select id="milestone" onchange="onMilestoneChanged()">
+</select><p class="error" id="milestone-link-warning"></p>
 <p class="error" id="message"/>
 </form>
 <button onclick="updateGoal()">Save</button>

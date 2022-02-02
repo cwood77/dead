@@ -27,7 +27,7 @@ tr:nth-child(even){background-color: #f2f2f2;}
 
 tr:hover {background-color: #ddd;}
 
-th {
+th:not(.timeline) {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
@@ -43,8 +43,9 @@ th.timeline {
   font-size: 9pt;
   padding-top: 3pt;
   padding-bottom: 3pt;
-  background-color: #3c04aa73;
+  /*background-color: #3c04aa73;*/
   text-align: center;
+  color: white;
 }
 
 th.icon { background-color: #FFFFFF; } /*border: 0px; }*/

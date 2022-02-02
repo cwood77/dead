@@ -9,6 +9,7 @@ $goalId = $checker->demandArg("GoalID");
 $owningUser = $checker->demandArg("As");
 $name = $checker->demandArg("Name");
 $priority = $checker->demandArg("Priority");
+$mile = $checker->demandArg("Mile");
 $checker->check();
 
 $db = new Db();
@@ -21,6 +22,7 @@ if ($user != null)
       $goal = $user->queryGoal($goalId);
       $goal->setTitle($name);
       $goal->setPriority($priority);
+      $goal->setMilestone($mile);
       $goal->addHistory($_SESSION['username'],"goal updated");
       echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
    }
