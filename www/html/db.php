@@ -87,6 +87,95 @@ class Goal {
    }
 }
 
+class EventIterator {
+   public $currentYear;
+   public $durations;
+   public $total;
+
+   function __construct()
+   {
+      $this->currentYear = intval(date("Y"));
+      $this->durations = array();
+      $this->total = 0;
+   }
+
+   function advance($event)
+   {
+      $difference = $event->deadline - $this->currentYear;
+      $this->currentYear = $event->deadline;
+
+      array_push($this->durations,$difference);
+      $this->total += $difference;
+   }
+
+   // return array of pairs (%,dur)
+   function compute()
+   {
+      $rval = array();
+      foreach($this->durations as $dur)
+      {
+         array_push($rval,array($dur / $this->total * 100.0, $dur));
+      }
+      return $rval;
+   }
+};
+
+class Event {
+   public $name;
+   public $deadline;
+
+   function __construct($name, $deadline)
+   {
+      $this->name = $name;
+      $this->deadline = intval($deadline);
+   }
+}
+
+class Timeline {
+   private $db;
+   private $user;
+   private $events;
+
+   function __construct($db, $user)
+   {
+      $this->db = $db;
+      $this->user = $user;
+      $this->events = null;
+   }
+
+   function listEvents()
+   {
+      if ($this->events == null)
+      {
+         $query = $this->db->conn->prepare("SELECT deadline,name FROM Milestones WHERE userID = '" . $this->user->id . "' ORDER BY deadline ASC");
+         $query->execute();
+         $rows = $query->fetchAll();
+
+         $array = array();
+         foreach($rows as $row)
+         {
+            array_push($array,new Event($row['name'],$row['deadline']));
+         }
+         $this->events = $array;
+      }
+      return $this->events;
+   }
+
+   function setEvents($newEventsArrayData)
+   {
+      $sql = "DELETE FROM Milestones WHERE userID = '" . $this->user->id . "'";
+      $this->db->conn->exec($sql);
+
+      foreach($newEventsArrayData as $pair)
+      {
+         $sql = "INSERT INTO Milestones (userID, deadline, name) VALUES ('" . $this->user->id . "', '" . $pair[0] . "', '" . $pair[1] . "')";
+         $this->db->conn->exec($sql);
+      }
+
+      $this->events = null;
+   }
+}
+
 class User {
    private $db;
    public $id;
@@ -259,6 +348,11 @@ class User {
             $this->db->conn->exec($sql);
          }
       }
+   }
+
+   function timeline()
+   {
+      return new Timeline($this->db, $this);
    }
 }
 
