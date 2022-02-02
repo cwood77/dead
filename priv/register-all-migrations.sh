@@ -8,3 +8,4 @@ if [ -z "$SQLPASSWD" ]; then
 fi
 
 /bin/bash /home/vagrant/priv/register-migration.sh 2 "add user prefs and drop unused brokendown column" $SQLPASSWD
+/bin/bash /home/vagrant/priv/register-migration.sh 3 "add milestones" $SQLPASSWD

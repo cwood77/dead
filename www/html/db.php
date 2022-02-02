@@ -147,18 +147,32 @@ class Timeline {
    {
       if ($this->events == null)
       {
-         $this->events = array(
-            new Event("Kiddos at home","2028"),
-            new Event("College","2032"),
-            new Event("Empty Nester","2042"),
-            new Event("Retired","2050")
-         );
+         $query = $this->db->conn->prepare("SELECT deadline,name FROM Milestones WHERE userID = '" . $this->user->id . "' ORDER BY deadline ASC");
+         $query->execute();
+         $rows = $query->fetchAll();
+
+         $array = array();
+         foreach($rows as $row)
+         {
+            array_push($array,new Event($row['name'],$row['deadline']));
+         }
+         $this->events = $array;
       }
       return $this->events;
    }
 
-   function setEvents($newEvents)
+   function setEvents($newEventsArrayData)
    {
+      $sql = "DELETE FROM Milestones WHERE userID = '" . $this->user->id . "'";
+      $this->db->conn->exec($sql);
+
+      foreach($newEventsArrayData as $pair)
+      {
+         $sql = "INSERT INTO Milestones (userID, deadline, name) VALUES ('" . $this->user->id . "', '" . $pair[0] . "', '" . $pair[1] . "')";
+         $this->db->conn->exec($sql);
+      }
+
+      $this->events = null;
    }
 }
 
