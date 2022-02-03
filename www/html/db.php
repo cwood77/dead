@@ -293,7 +293,7 @@ class User {
             $queryText .= $this->_buildQueryForUsersSharedWithMe();
          }
       }
-      $queryText .= " ORDER BY state ASC, Dead.Steps.priority ASC, Dead.Steps.title ASC";
+      $queryText .= " ORDER BY state ASC, Dead.Goals.priority ASC, Dead.Steps.priority ASC, Dead.Steps.title ASC";
       $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();
