@@ -54,24 +54,7 @@ try
 
          $html .= "<tr onclick='clickRow(" . $goal['id'] . ")'>";
          $html .= "<td style='background-color: #" . $colorer->getColorOf($goalObj->getMilestone()) . "'></td>";
-         switch($db->getGoalStepState($goal['id']))
-         {
-            case 'nosteps':
-               $html .= "<td class='icon'><img src='nosteps.png'></td>";
-               break;
-            case 'inwork':
-               $html .= "<td class='icon'><img src='inwork.png'></td>";
-               break;
-            case 'ready':
-               $html .= "<td class='icon'><img src='ready.png'></td>";
-               break;
-            case 'blocked':
-               $html .= "<td class='icon'><img src='blocked.png'></td>";
-               break;
-            case 'complete':
-               $html .= "<td class='icon'><img src='done.png'></td>";
-               break;
-         }
+         $html .= "<td class='icon'><img src='" . $db->getGoalStepState($goal['id']) . ".png'></td>";
          if ($_SESSION['showall'])
          {
             $html .= "<td>" . $goal['userName'] . "</td>";
@@ -96,21 +79,7 @@ try
       foreach($steps as $step)
       {
          $html .= "<tr onclick='clickRow(" . $step[4] . ")'>";
-         switch($step[2])
-         {
-            case 'inwork':
-               $html .= "<td class='icon'><img src='inwork.png'></td>";
-               break;
-            case 'ready':
-               $html .= "<td class='icon'><img src='ready.png'></td>";
-               break;
-            case 'blocked':
-               $html .= "<td class='icon'><img src='blocked.png'></td>";
-               break;
-            case 'complete':
-               $html .= "<td class='icon'><img src='done.png'></td>";
-               break;
-         }
+         $html .= "<td class='icon'><img src='" . $step[2] . "'></td>";
          if ($_SESSION['showall'])
          {
             $html .= "<td>" . $step['5'] . "</td>";
