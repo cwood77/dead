@@ -234,7 +234,7 @@ class User {
 
    function listGoals($all)
    {
-      $queryText = "SELECT userName, Dead.Goals.id, priority, title FROM Dead.Goals LEFT JOIN Dead.Users ON UserID = Dead.Users.id";
+      $queryText = "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title FROM Dead.Goals LEFT JOIN Dead.Users ON UserID = Dead.Users.id LEFT JOIN Dead.Steps ON Goals.id = GoalID";
       if ($this->su)
       {
          if (!$all)
@@ -250,7 +250,7 @@ class User {
             $queryText .= $this->_buildQueryForUsersSharedWithMe();
          }
       }
-      $queryText .= " ORDER BY priority ASC, title ASC";
+      $queryText .= " GROUP BY state, Goals.id ORDER BY state, Goals.priority ASC, Goals.title ASC";
       $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();
@@ -293,7 +293,7 @@ class User {
             $queryText .= $this->_buildQueryForUsersSharedWithMe();
          }
       }
-      $queryText .= " ORDER BY state ASC, Dead.Steps.priority DESC, Dead.Steps.title ASC";
+      $queryText .= " ORDER BY state ASC, Dead.Goals.priority ASC, Dead.Steps.priority ASC, Dead.Steps.title ASC";
       $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();

@@ -209,10 +209,11 @@ milestone: <select id="milestone" onchange="onMilestoneChanged()">
 <div name="addingStep">
 <br/>
    State: <select id="editStepState">
-      <option class="blocked">blocked</option>
       <option class="ready">ready</option>
       <option class="inwork">inwork</option>
+      <option class="blocked">blocked</option>
       <option class="complete">complete</option>
+      <option class="cancelled">cancelled</option>
    </select>
    Priority: <select id="editStepPriority">
       <option>1</option>

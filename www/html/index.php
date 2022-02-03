@@ -18,6 +18,18 @@ if (!empty($_SESSION['username']))
 <?php require 'api.php'; includeJsApis(array("addUser","login")); ?>
 <script>
 
+function onload()
+{
+   // autosubmit on enter
+   document.addEventListener("keyup", function(event)
+   {
+      if (event.keyCode === 13)
+      {
+         submit();
+      }
+   });
+}
+
 function submit()
 {
    // client-side validation
@@ -58,7 +70,7 @@ function submit()
 
 </head>
 
-<body>
+<body onload="onload()">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <center>
 
