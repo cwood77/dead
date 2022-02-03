@@ -9,3 +9,4 @@ fi
 
 /bin/bash /home/vagrant/priv/register-migration.sh 2 "add user prefs and drop unused brokendown column" $SQLPASSWD
 /bin/bash /home/vagrant/priv/register-migration.sh 3 "add milestones" $SQLPASSWD
+/bin/bash /home/vagrant/priv/register-migration.sh 4 "associate milestones with goals" $SQLPASSWD

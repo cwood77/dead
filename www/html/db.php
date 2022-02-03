@@ -42,6 +42,21 @@ class Goal {
       $this->pri = $value;
    }
 
+   function getMilestone()
+   {
+      $query = $this->db->conn->prepare(
+         "SELECT milestone FROM Dead.Goals WHERE id = '" . $this->id . "'");
+      $query->execute();
+      return $query->fetchColumn();
+   }
+
+   function setMilestone($value)
+   {
+      $sql = "UPDATE Dead.Goals SET milestone = '" . $value . "' WHERE id = '" . $this->id . "'";
+      $this->db->conn->exec($sql);
+      $this->pri = $value;
+   }
+
    function addHistory($username, $text, $kind = "auto")
    {
       $userId = $this->db->findUser($username)->id;
@@ -118,7 +133,7 @@ class EventIterator {
       }
       return $rval;
    }
-};
+} 
 
 class Event {
    public $name;
