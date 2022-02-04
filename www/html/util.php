@@ -40,7 +40,7 @@ class CheckerBase {
       {
          $this->addError("required arg '$name' absent");
       }
-      return $v;
+      return htmlspecialchars_decode($v);
    }
 
    function demandArgBool($name)

@@ -42,6 +42,20 @@ class Goal {
       $this->pri = $value;
    }
 
+   function getDesc()
+   {
+      $query = $this->db->conn->prepare(
+         "SELECT descr FROM Dead.Goals WHERE id = '" . $this->id . "'");
+      $query->execute();
+      return $query->fetchColumn();
+   }
+
+   function setDesc($value)
+   {
+      $sql = "UPDATE Dead.Goals SET descr = '" . $value . "' WHERE id = '" . $this->id . "'";
+      $this->db->conn->exec($sql);
+   }
+
    function getMilestone()
    {
       $query = $this->db->conn->prepare(

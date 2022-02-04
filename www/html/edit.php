@@ -109,12 +109,13 @@ function updateGoal()
    var name = document.getElementById("name").value;
    var priority = document.getElementById("priority").value;
    var milestone = document.getElementById("milestone").value;
+   var desc = document.getElementById("desc").value;
 
    var good = (json) =>
    {
       window.location.href="dashboard.php";
    }
-   api.editGoal(_goalId,_owningUser,name,priority,milestone,good);
+   api.editGoal(_goalId,_owningUser,name,priority,desc,milestone,good);
 }
 
 function deleteGoal()
@@ -198,6 +199,8 @@ priority: <select id="priority">
 </select><br/>
 milestone: <select id="milestone" onchange="onMilestoneChanged()">
 </select><p class="error" id="milestone-link-warning"></p>
+Description:</br>
+<textarea id="desc" rows="7" cols="100%"><?php echo $goal->getDesc(); ?></textarea>
 <p class="error" id="message"/>
 </form>
 <button onclick="updateGoal()">Save</button>
