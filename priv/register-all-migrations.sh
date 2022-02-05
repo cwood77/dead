@@ -13,3 +13,4 @@ fi
 /bin/bash /home/vagrant/priv/register-migration.sh 5 "add cancelled step state" $SQLPASSWD
 /bin/bash /home/vagrant/priv/register-migration.sh 6 "double string lengths to 100 chars" $SQLPASSWD
 /bin/bash /home/vagrant/priv/register-migration.sh 7 "add description field to goals" $SQLPASSWD
+/bin/bash /home/vagrant/priv/register-migration.sh 8 "workaround MySQL bug with MIN" $SQLPASSWD
