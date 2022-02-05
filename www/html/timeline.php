@@ -6,13 +6,27 @@ require '_timeline.php';
 
 leaveIfNoSession();
 
+function lookupAge()
+{
+   $db = new Db();
+   $birthYear = $db->getUserPref("age", $_SESSION['username']);
+   if ($birthYear != 0)
+   {
+      return date("Y") - $birthYear;
+   }
+   else
+   {
+      return "";
+   }
+}
+
 ?>
 
 <html>
 <head>
 <link rel="stylesheet" href="main.css"/>
 <title>Dead</title>
-<?php require 'api.php'; includeJsApis(array("toggleDashboard","showAll","timeline")); ?>
+<?php require 'api.php'; includeJsApis(array("toggleDashboard","showAll","timeline","flexPrefs")); ?>
 <script>
 
 function load()
@@ -136,10 +150,24 @@ function deleteRow(index)
    jsonToTable(json);
 }
 
+function saveAge()
+{
+   var age = document.getElementById("age").value;
+   if (age != "")
+   {
+      var birthYear = new Date().getFullYear() - parseInt(age);
+      api.setFlexPrefs({ "age": birthYear });
+   }
+}
+
 function save()
 {
+   var thenSaveAge = function(json)
+   {
+      saveAge();
+   }
    var bigString = JSON.stringify(tableToJson());
-   api.saveMilestones(bigString,function(){});
+   api.saveMilestones(bigString,thenSaveAge);
 }
 
 </script>
@@ -152,7 +180,7 @@ function save()
 <table id="milestoneTable"></table>
 <br/>
 Age Calculator:</br>
-Current metabolic age <input id="age" type="text" onkeyup="handleAgeChange()"></br> 
+Current metabolic age <input id="age" type="text" onkeyup="handleAgeChange()" value="<?php echo lookupAge(); ?>"></br> 
 Life expectancy <select onchange="handleExpectancyPicker(this)">
    <option>average USA male</option>
    <option>average USA female</option>
