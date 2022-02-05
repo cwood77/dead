@@ -2,8 +2,6 @@
 
 require '/var/www/db-secrets.php';
 
-// get prefs from username - add/edit/acct usecase
-
 class Goal {
    private $db;
    private $id;
@@ -494,6 +492,20 @@ class Db {
          "SELECT goalPriority, stepPriority, stepState FROM Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.UserPrefs.id = Dead.Users.id WHERE userName = '" . $username . "'");
       $query->execute();
       return $query->fetchAll()[0];
+   }
+
+   function setUserPref($username, $name, $value)
+   {
+      $sql = "UPDATE Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.Users.id = Dead.UserPrefs.id  SET " . $name . " = '" . $value . "' WHERE userName = '" . $username . "'";
+      $this->conn->exec($sql);
+   }
+
+   function getUserPref($prefName, $username)
+   {
+      $query = $this->conn->prepare(
+         "SELECT UserPrefs." . $prefName . " FROM Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.UserPrefs.id = Dead.Users.id WHERE userName = '" . $username . "'");
+      $query->execute();
+      return $query->fetchColumn();
    }
 
    // ------ migration APIs -------
