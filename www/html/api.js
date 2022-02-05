@@ -30,9 +30,9 @@ class ServerMessage {
          {
             fullUrl += "&";
          }
-         fullUrl += key;
+         fullUrl += this._encode(key);
          fullUrl += "=";
-         fullUrl += val;
+         fullUrl += this._encode(val);
       }
 
 
@@ -65,6 +65,38 @@ class ServerMessage {
          }
          func(value);
       }
+   }
+
+   _encode(thing)
+   {
+      // make sure str is a string
+      var str = "" + thing;
+
+      var map = {
+         ' ' : '&#32;',
+         '\t': '&#09;',
+         '\r': '&#12;',
+         '\n': '&#13;',
+      };
+
+      var multilineEncoding = str.replace(/[ \t\r\n]/g, function(m) { return map[m]; });
+      return encodeURIComponent(multilineEncoding);
+   }
+
+   _jsHtmlSpecialChars(thing)
+   {
+      // make sure str is a string
+      var str = "" + thing;
+
+      var map = {
+         '&': '&amp;',
+         '<': '&lt;',
+         '>': '&gt;',
+         '"': '&quot;',
+         "'": '&#039;'
+      };
+
+      return str.replace(/[&<>"']/g, function(m) { return map[m]; });
    }
 }
 

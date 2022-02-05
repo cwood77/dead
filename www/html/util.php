@@ -36,11 +36,11 @@ class CheckerBase {
    function demandArg($name)
    {
       $v = $_REQUEST[$name];
-      if (empty($v))
+      if (!array_key_exists($name,$_REQUEST))
       {
          $this->addError("required arg '$name' absent");
       }
-      return $v;
+      return htmlspecialchars_decode($v);
    }
 
    function demandArgBool($name)

@@ -2,8 +2,6 @@
 
 require '/var/www/db-secrets.php';
 
-// get prefs from username - add/edit/acct usecase
-
 class Goal {
    private $db;
    private $id;
@@ -40,6 +38,20 @@ class Goal {
       $sql = "UPDATE Dead.Goals SET priority = '" . $value . "' WHERE id = '" . $this->id . "'";
       $this->db->conn->exec($sql);
       $this->pri = $value;
+   }
+
+   function getDesc()
+   {
+      $query = $this->db->conn->prepare(
+         "SELECT descr FROM Dead.Goals WHERE id = '" . $this->id . "'");
+      $query->execute();
+      return $query->fetchColumn();
+   }
+
+   function setDesc($value)
+   {
+      $sql = "UPDATE Dead.Goals SET descr = '" . $value . "' WHERE id = '" . $this->id . "'";
+      $this->db->conn->exec($sql);
    }
 
    function getMilestone()
@@ -234,7 +246,12 @@ class User {
 
    function listGoals($all)
    {
-      $queryText = "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title FROM Dead.Goals LEFT JOIN Dead.Users ON UserID = Dead.Users.id LEFT JOIN Dead.Steps ON Goals.id = GoalID";
+      $queryText =
+         "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title, MIN(stateInt) AS impliedGoalState"
+         . " FROM Dead.Goals"
+         . " LEFT JOIN Dead.Users ON UserID = Dead.Users.id"
+         . " LEFT JOIN Dead.Steps ON Goals.id = GoalID"
+         . " LEFT JOIN Dead.StepStateEnumValues ON Steps.state = StepStateEnumValues.state";
       if ($this->su)
       {
          if (!$all)
@@ -250,7 +267,7 @@ class User {
             $queryText .= $this->_buildQueryForUsersSharedWithMe();
          }
       }
-      $queryText .= " GROUP BY state, Goals.id ORDER BY state, Goals.priority ASC, Goals.title ASC";
+      $queryText .= " GROUP BY Goals.id ORDER BY impliedGoalState, Goals.priority ASC, Goals.title ASC";
       $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();
@@ -480,6 +497,20 @@ class Db {
          "SELECT goalPriority, stepPriority, stepState FROM Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.UserPrefs.id = Dead.Users.id WHERE userName = '" . $username . "'");
       $query->execute();
       return $query->fetchAll()[0];
+   }
+
+   function setUserPref($username, $name, $value)
+   {
+      $sql = "UPDATE Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.Users.id = Dead.UserPrefs.id  SET " . $name . " = '" . $value . "' WHERE userName = '" . $username . "'";
+      $this->conn->exec($sql);
+   }
+
+   function getUserPref($prefName, $username)
+   {
+      $query = $this->conn->prepare(
+         "SELECT UserPrefs." . $prefName . " FROM Dead.UserPrefs LEFT JOIN Dead.Users ON Dead.UserPrefs.id = Dead.Users.id WHERE userName = '" . $username . "'");
+      $query->execute();
+      return $query->fetchColumn();
    }
 
    // ------ migration APIs -------
