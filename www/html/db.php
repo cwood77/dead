@@ -244,10 +244,11 @@ class User {
       return new Goal($this->db, $gid, $title, 4);
    }
 
-   function listGoals($all)
+   function listGoals($all, $sortMode, $filterSettings)
    {
       $queryText =
-         "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title, MIN(stateInt) AS impliedGoalState"
+         "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title,"
+            . " MIN(CASE WHEN stateInt is NULL THEN 0 ELSE stateInt END) AS impliedGoalState"
          . " FROM Dead.Goals"
          . " LEFT JOIN Dead.Users ON UserID = Dead.Users.id"
          . " LEFT JOIN Dead.Steps ON Goals.id = GoalID"
@@ -267,7 +268,9 @@ class User {
             $queryText .= $this->_buildQueryForUsersSharedWithMe();
          }
       }
-      $queryText .= " GROUP BY Goals.id ORDER BY impliedGoalState, Goals.priority ASC, Goals.title ASC";
+      $queryText .= " GROUP BY Goals.id";
+      $queryText .= $this->_computeFilterExpr($filterSettings);
+      $queryText .= $this->_computeSortExpr($sortMode);
       $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();
@@ -287,6 +290,57 @@ class User {
       }
 
       return $html;
+   }
+
+   //$queryText .= " HAVING impliedGoalState NOT IN ('3', '4', '5')";
+   function _computeFilterExpr($filterSettings)
+   {
+      $queryText = " HAVING impliedGoalState NOT IN (";
+      $any = false;
+
+      if ($filterSettings->hideCompleted)
+      {
+         if ($any)
+         {
+            $queryText .= ",";
+         }
+         $queryText .= "'4'";
+         $any = true;
+      }
+
+      if ($filterSettings->hideBlocked)
+      {
+         if ($any)
+         {
+            $queryText .= ",";
+         }
+         $queryText .= "'3'";
+         $any = true;
+      }
+
+      // TODO don't know how to implement hideIdeas and hideMilestones
+
+      $queryText .= ")";
+      if ($any)
+      {
+         return $queryText;
+      }
+      else
+      {
+         return "";
+      }
+   }
+
+   function _computeSortExpr($sortMode)
+   {
+      if ($sortMode == "Sort&#32;by&#32;priority")
+      {
+         return " ORDER BY Goals.priority ASC, impliedGoalState, Goals.title ASC";
+      }
+      else
+      {
+         return " ORDER BY impliedGoalState, Goals.priority ASC, Goals.title ASC";
+      }
    }
 
    function listSteps($all)
