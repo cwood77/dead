@@ -44,6 +44,7 @@ function toggleView(doToggle)
    {
       document.getElementById("tableId").innerHTML = json['html'];
       document.getElementById("toggleBtn").innerHTML = json['button'];
+      document.getElementById("startFilteringBtn").innerHTML = json['filterButton'];
 
       var allowFiltering = (json['button'] == "Show steps") // only support filters for goals for now
       toggle(filtering,false);
@@ -59,9 +60,10 @@ function loadFilter()
 
    var good = function(json)
    {
-      document.getElementById("fil-comp").checked = json['hideCompleted'];
-      document.getElementById("fil-blc").checked = json['hideBlocked'];
       document.getElementById("fil-ida").checked = json['hideIdeas'];
+      document.getElementById("fil-blc").checked = json['hideBlocked'];
+      document.getElementById("fil-comp").checked = json['hideCompleted'];
+      document.getElementById("fil-can").checked = json['hideCancelled'];
       document.getElementById("fil-mile").checked = json['hideLaterMilestones'];
 
       var good2 = function(json2)
@@ -86,14 +88,16 @@ function applyFilter()
    toggle(filtering);
 
    var json = {
-      'hideCompleted': false,
-      'hideBlocked': false,
       'hideIdeas': false,
+      'hideBlocked': false,
+      'hideCompleted': false,
+      'hideCancelled': false,
       'hideLaterMilestones': false
    };
-   json['hideCompleted'] = document.getElementById("fil-comp").checked;
-   json['hideBlocked'] = document.getElementById("fil-blc").checked;
    json['hideIdeas'] = document.getElementById("fil-ida").checked;
+   json['hideBlocked'] = document.getElementById("fil-blc").checked;
+   json['hideCompleted'] = document.getElementById("fil-comp").checked;
+   json['hideCancelled'] = document.getElementById("fil-can").checked;
    json['hideLaterMilestones'] = document.getElementById("fil-mile").checked;
    api.setStash('filter-stash',json);
 
@@ -125,11 +129,13 @@ function clickRow(goalId)
 <!-- filtering subpanel -->
 <div name="filterToggle">
 <br/>
-<input id="fil-comp" type="checkbox">Hide completed<br/>
+<input id="fil-ida" type="checkbox">Hide ideas<br/>
 <br/>
 <input id="fil-blc" type="checkbox">Hide blocked<br/>
 <br/>
-<input id="fil-ida" type="checkbox">Hide ideas<br/>
+<input id="fil-comp" type="checkbox">Hide completed<br/>
+<br/>
+<input id="fil-can" type="checkbox">Hide cancelled<br/>
 <br/>
 <input id="fil-mile" type="checkbox">Hide later milestones<br/>
 <br/>

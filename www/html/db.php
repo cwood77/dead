@@ -269,7 +269,7 @@ class User {
          }
       }
       $queryText .= " GROUP BY Goals.id";
-      $queryText .= $this->_computeFilterExpr($filterSettings);
+      $queryText .= $filterSettings->methods->computeHavingClause();
       $queryText .= $this->_computeSortExpr($sortMode);
       $query = $this->db->conn->prepare($queryText);
       $query->execute();
@@ -290,45 +290,6 @@ class User {
       }
 
       return $html;
-   }
-
-   //$queryText .= " HAVING impliedGoalState NOT IN ('3', '4', '5')";
-   function _computeFilterExpr($filterSettings)
-   {
-      $queryText = " HAVING impliedGoalState NOT IN (";
-      $any = false;
-
-      if ($filterSettings->hideCompleted)
-      {
-         if ($any)
-         {
-            $queryText .= ",";
-         }
-         $queryText .= "'4'";
-         $any = true;
-      }
-
-      if ($filterSettings->hideBlocked)
-      {
-         if ($any)
-         {
-            $queryText .= ",";
-         }
-         $queryText .= "'3'";
-         $any = true;
-      }
-
-      // TODO don't know how to implement hideIdeas and hideMilestones
-
-      $queryText .= ")";
-      if ($any)
-      {
-         return $queryText;
-      }
-      else
-      {
-         return "";
-      }
    }
 
    function _computeSortExpr($sortMode)
