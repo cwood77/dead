@@ -244,10 +244,12 @@ class User {
       return new Goal($this->db, $gid, $title, 4);
    }
 
-   function listGoals($all)
+   function listGoals($all, $sortMode, $filterSettings)
    {
+      $hasWhere = false;
       $queryText =
-         "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title, MIN(stateInt) AS impliedGoalState"
+         "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title,"
+            . " MIN(CASE WHEN stateInt is NULL THEN 0 ELSE stateInt END) AS impliedGoalState"
          . " FROM Dead.Goals"
          . " LEFT JOIN Dead.Users ON UserID = Dead.Users.id"
          . " LEFT JOIN Dead.Steps ON Goals.id = GoalID"
@@ -257,6 +259,7 @@ class User {
          if (!$all)
          {
             $queryText .= " WHERE userID = '" . $this->id . "'";
+            $hasWhere = true;
          }
       }
       else
@@ -266,8 +269,12 @@ class User {
          {
             $queryText .= $this->_buildQueryForUsersSharedWithMe();
          }
+         $hasWhere = true;
       }
-      $queryText .= " GROUP BY Goals.id ORDER BY impliedGoalState, Goals.priority ASC, Goals.title ASC";
+      $queryText .= $filterSettings->methods->computeWhereClause($hasWhere);
+      $queryText .= " GROUP BY Goals.id";
+      $queryText .= $filterSettings->methods->computeHavingClause();
+      $queryText .= $this->_computeSortExpr($sortMode);
       $query = $this->db->conn->prepare($queryText);
       $query->execute();
       return $query->fetchAll();
@@ -287,6 +294,18 @@ class User {
       }
 
       return $html;
+   }
+
+   function _computeSortExpr($sortMode)
+   {
+      if ($sortMode == "Sort&#32;by&#32;priority")
+      {
+         return " ORDER BY Goals.priority ASC, impliedGoalState, Goals.title ASC";
+      }
+      else
+      {
+         return " ORDER BY impliedGoalState, Goals.priority ASC, Goals.title ASC";
+      }
    }
 
    function listSteps($all)

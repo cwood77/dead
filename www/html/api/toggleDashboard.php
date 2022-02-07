@@ -1,8 +1,12 @@
 <?php
 
+//ini_set("display_errors",1);
+//error_reporting(E_ALL);
+
 require '/var/www/html/util.php';
 require '/var/www/html/db.php';
 require '/var/www/html/_timeline.php';
+require '/var/www/html/_filter.php';
 
 leaveIfNoSession();
 $checker = new ApiChecker();
@@ -13,6 +17,7 @@ try
 {
    $html = "";
    $buttonLbl = "";
+   $filterButtonLbl = "";
 
    $state = $_SESSION['dashboardState'];
    if($state == null)
@@ -37,6 +42,10 @@ try
    // ------------------------------------------------------------------- GOAL MODE -----------------------------------------
    if ($state == "goals")
    {
+      $db = new Db();
+      $sortMode = fetchSortSettings($db);
+      $filterMode = fetchFilterSettings($db);
+
       $buttonLbl = "Show steps";
       $html .= '<tr><th></th><th class=\"icon1\"></th>';
       if ($_SESSION['showall'])
@@ -44,9 +53,8 @@ try
          $html .= "<th>User</th>";
       }
       $html .= '<th>Pri</th><th>Goal</th></tr>';
-      $db = new Db();
       $user = $db->findUser($_SESSION['username']);
-      $goals = $user->listGoals($_SESSION['showall']);
+      $goals = $user->listGoals($_SESSION['showall'], $sortMode, $filterMode);
       $colorer = new EventColorer($user->timeline());
       foreach($goals as $goal)
       {
@@ -62,8 +70,9 @@ try
          $html .= "<td>" . $goal['priority'] . "</td>";
          $html .= "<td>" . $goal['title'] . "</td></tr>";
       }
+      $filterButtonLbl = $filterMode->methods->computeFilterButtonLabel();
    }
-   // ------------------------------------------------------------------- GOAL MODE -----------------------------------------
+   // ------------------------------------------------------------------- STEP MODE -----------------------------------------
    else
    {
       $buttonLbl = "Show goals";
@@ -93,6 +102,7 @@ try
    echo '{ "pass": true, "sid": "' . htmlspecialchars(SID)
       . '", "html": "' . $html
       . '", "button": "' . $buttonLbl
+      . '", "filterButton": "' . $filterButtonLbl
       . '" }';
 }
 catch(PDOException $x)
