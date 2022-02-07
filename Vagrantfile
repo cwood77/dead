@@ -1,12 +1,32 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+isProd = false
+unified = false
+if ENV["DEADMODE"]
+   if ENV["DEADMODE"] == "prod"
+      isProd = true
+   else if ENV["DEADMODE"] == "dev"
+      isProd = false
+   else
+      raise ArgumentError, "DEADMODE is set to unsupported value: #{ENV["DEADMODE"]}"
+   end
+else
+   unified = true
+end
+
 Vagrant.configure("2") do |config|
 
     config.vm.box = "ubuntu/xenial64"
-    config.vm.network "private_network", ip: "192.168.33.10"
-    config.vm.network "forwarded_port", guest: 80, host: 8080
-    config.vm.hostname = "dev.local"
+    if isProd || unified
+       config.vm.network "private_network", ip: "192.168.33.10"
+       config.vm.network "forwarded_port", guest: 80, host: 8080
+       config.vm.hostname = "dev.local"
+    else
+       config.vm.network "private_network", ip: "192.168.33.11"
+       config.vm.network "forwarded_port", guest: 80, host: 8085
+       config.vm.hostname = "realdev.local"
+    end
     config.vm.provider "virtualbox" do |v|
         v.memory = 1024
         v.cpus = 1
