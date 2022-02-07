@@ -246,6 +246,7 @@ class User {
 
    function listGoals($all, $sortMode, $filterSettings)
    {
+      $hasWhere = false;
       $queryText =
          "SELECT userName, Dead.Goals.id, Dead.Goals.priority, Dead.Goals.title,"
             . " MIN(CASE WHEN stateInt is NULL THEN 0 ELSE stateInt END) AS impliedGoalState"
@@ -258,6 +259,7 @@ class User {
          if (!$all)
          {
             $queryText .= " WHERE userID = '" . $this->id . "'";
+            $hasWhere = true;
          }
       }
       else
@@ -267,7 +269,9 @@ class User {
          {
             $queryText .= $this->_buildQueryForUsersSharedWithMe();
          }
+         $hasWhere = true;
       }
+      $queryText .= $filterSettings->methods->computeWhereClause($hasWhere);
       $queryText .= " GROUP BY Goals.id";
       $queryText .= $filterSettings->methods->computeHavingClause();
       $queryText .= $this->_computeSortExpr($sortMode);

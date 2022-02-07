@@ -19,6 +19,37 @@ class FilterSettingsMethods {
 
    function computeWhereClause($alreadyStarted)
    {
+      if(!$this->jsonObj->hideLaterMilestones)
+      {
+         return "";
+      }
+
+      $user = $this->db->findUser($_SESSION['username']);
+      $tl = $user->timeline();
+      $events = $tl->listEvents();
+      if(count($events) >= 1)
+      {
+         $expr = "";
+         if($alreadyStarted)
+         {
+            $expr .= "AND ( ";
+         }
+         else
+         {
+            $expr .= "WHERE ";
+         }
+
+         $expr .= "milestone IS NULL OR milestone = '(none)' OR milestone = '" . $events[0]->name . "'";
+
+         if($alreadyStarted)
+         {
+            $expr .= " )";
+         }
+
+         $this->filterCnt++;
+         return $expr;
+      }
+
       return "";
    }
 
