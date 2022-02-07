@@ -25,7 +25,6 @@ if ($user != null)
       $goal->setPriority($priority);
       $goal->setDesc($desc);
       $goal->setMilestone($mile);
-      $goal->addHistory($_SESSION['username'],"goal updated");
       echo '{ "pass": true, "sid": "' . htmlspecialchars(SID). '" }';
    }
    catch(PDOException $x)

@@ -20,7 +20,7 @@ $goal = $user->queryGoal($goalId);
 <head>
 <link rel="stylesheet" href="main.css"/>
 <title>Dead</title>
-<?php require 'api.php'; includeJsApis(array("editGoal","deleteGoal","renderSteps","addStep","deleteStep","updateStep")); ?>
+<?php require 'api.php'; includeJsApis(array("editGoal","deleteGoal","renderSteps","addStep","deleteStep","updateStep","comments")); ?>
 <script src="toggle.js"></script>
 <script>
 <?php echo 'var _owningUser = "' . $owningUser . '";'; ?>
@@ -49,6 +49,12 @@ function onload()
    populateMilestonesAndWarn();
 
    refreshStepTable();
+
+   var updateComments = function(json)
+   {
+      document.getElementById("commentTable").innerHTML = json['html'];
+   }
+   api.getComments(_owningUser,_goalId,updateComments);
 }
 
 function populateMilestonesAndWarn()
@@ -177,10 +183,13 @@ function addComment()
 {
    var control = document.getElementById("newCommentText");
 
-   alert("unimpl'd");
-
-   control.value = "";
-   toggle(addingComment);
+   var updateComments = function(json)
+   {
+      document.getElementById("commentTable").innerHTML = json['html'];
+      control.value = "";
+      toggle(addingComment);
+   }
+   api.addComments(_owningUser,_goalId,control.value,updateComments);
 }
 
 </script>
@@ -244,15 +253,7 @@ Comments:<input type="text" class="wide" id="newCommentText"><br/>
 <button onclick="addComment()">Add</button>    <button onclick="toggle(addingComment)">Cancel</button><br/></div>
 <!-- display -->
 <br/>
-<table id="tableId">
-<tr><th>Date</th><th>User</th><th>Event</th></tr>
-<?php
-$history = $goal->listHistory();
-foreach($history as $histItem)
-{
-   echo "<tr><td>" . $histItem[0] . "</td><td>" . $histItem[1] . "</td><td>" . $histItem[2] . "</td></tr>";
-}
-?>
+<table id="commentTable">
 </table>
 <br/>
 
